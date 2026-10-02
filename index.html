@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>StitchDesk — AI Receptionist // ❯ y_</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --void:#080b0f;--void2:#0c1015;--surface:#111820;
+  --border:#1a2330;--border2:#222e3c;
+  --acid:#b5ff4d;--growth:#7fb069;--dim:#3d5a3e;
+  --text:#c9d4c0;--muted:#4a5a44;--white:#f0f4f0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--void);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden}
+
+/* scanlines */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.022) 2px,rgba(0,0,0,0.022) 4px);pointer-events:none;z-index:9000}
+
+/* dot grid */
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(rgba(127,176,105,0.06) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;z-index:0}
+
+@keyframes blink{50%{opacity:0}}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;height:52px;background:rgba(8,11,15,0.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(1rem,5vw,3rem);justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:0.82rem;color:var(--white);text-decoration:none}
+.nav-logo .arr{color:var(--growth)}
+.nav-logo .cur{display:inline-block;width:8px;height:0.88em;background:var(--acid);margin-left:1px;vertical-align:bottom;animation:blink 1s step-end infinite}
+.nav-logo .sep{color:var(--border2);margin:0 5px}
+.nav-logo .sub{font-size:0.62rem;color:var(--muted);font-weight:400;letter-spacing:0.08em}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--acid)}
+.btn-nav{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--acid);color:var(--void);border:none;padding:0.45rem 1.1rem;cursor:pointer;transition:all .18s}
+.btn-nav:hover{background:var(--white)}
+
+/* ── HERO ── */
+.hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:7rem clamp(1.5rem,7vw,5rem) 4rem;max-width:1100px;margin:0 auto}
+.hero-prompt{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);letter-spacing:0.05em;margin-bottom:0.4rem;animation:up .4s ease both}
+.hero-prompt .g{color:var(--growth)}.hero-prompt .a{color:var(--acid)}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--growth);margin-bottom:1.6rem;display:flex;align-items:center;gap:8px;animation:up .4s .08s ease both}
+.eyebrow::before{content:'';width:18px;height:1px;background:var(--growth)}
+.hero h1{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:clamp(2.6rem,7vw,5.5rem);line-height:.97;color:var(--white);letter-spacing:-.03em;margin-bottom:1.6rem;animation:up .45s .14s ease both}
+.hero h1 .a{color:var(--acid)}.hero h1 .g{color:var(--growth)}
+.hero-sub{font-size:1.05rem;color:var(--muted);max-width:500px;margin-bottom:2.5rem;line-height:1.75;animation:up .45s .22s ease both}
+.hero-sub strong{color:var(--text);font-weight:500}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:4rem;animation:up .45s .3s ease both}
+.hero-stats{display:flex;flex-wrap:wrap;gap:2.5rem;padding-top:2.5rem;border-top:1px solid var(--border);animation:up .45s .38s ease both}
+.stat-val{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1.9rem;color:var(--acid);line-height:1;margin-bottom:.2rem}
+.stat-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+
+/* ── BUTTONS ── */
+.btn-primary{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;background:var(--acid);color:var(--void);border:none;padding:.9rem 2rem;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary:hover{background:var(--white);transform:translateY(-1px)}
+.btn-ghost{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;background:transparent;color:var(--muted);border:1px solid var(--border2);padding:.9rem 2rem;cursor:pointer;transition:all .18s;text-decoration:none;display:inline-block}
+.btn-ghost:hover{border-color:var(--growth);color:var(--growth)}
+
+/* ── SECTION BASE ── */
+section{position:relative;z-index:1;padding:clamp(3rem,8vw,6rem) clamp(1.5rem,7vw,5rem)}
+.inner{max-width:1100px;margin:0 auto}
+.tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
+.tag::before{content:'//';color:var(--growth)}
+.section-title{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:clamp(1.6rem,4vw,2.8rem);color:var(--white);line-height:1.1;margin-bottom:.9rem;letter-spacing:-.025em}
+.section-title em{font-style:normal;color:var(--acid)}
+.section-sub{color:var(--muted);font-size:.95rem;max-width:500px;margin-bottom:3rem;line-height:1.7}
+
+/* ── FEATURES ── */
+#features{background:var(--void2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1px;background:var(--border);border:1px solid var(--border)}
+.feat{background:var(--void2);padding:2rem 1.8rem;position:relative;transition:background .2s}
+.feat:hover{background:var(--surface)}
+.feat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--border2);transition:background .2s}
+.feat:hover::before{background:var(--acid)}
+.feat-id{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);letter-spacing:.18em;text-transform:uppercase;margin-bottom:1rem}
+.feat-id .n{color:var(--growth)}
+.feat-title{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.95rem;color:var(--white);margin-bottom:.65rem;letter-spacing:-.01em}
+.feat-desc{font-size:.88rem;color:var(--muted);line-height:1.65}
+
+/* ── HOW IT WORKS ── */
+#how{background:var(--void)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));border:1px solid var(--border)}
+.step{padding:2rem 1.6rem;border-right:1px solid var(--border)}
+.step:last-child{border-right:none}
+.step-n{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:2rem;color:var(--border2);line-height:1;margin-bottom:1.2rem;transition:color .2s}
+.step:hover .step-n{color:var(--acid)}
+.step-title{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.88rem;color:var(--white);margin-bottom:.6rem}
+.step-desc{font-size:.85rem;color:var(--muted);line-height:1.65}
+
+/* ── PRICING ── */
+#pricing{background:var(--void2);border-top:1px solid var(--border)}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;max-width:700px}
+.price-card{background:var(--void);border:1px solid var(--border2);padding:2.5rem 2rem;position:relative;transition:border-color .2s}
+.price-card:hover{border-color:var(--dim)}
+.price-card.featured{border-color:var(--acid);background:linear-gradient(160deg,rgba(181,255,77,.03) 0%,var(--void) 55%)}
+.price-card.featured::before{content:'★ MOST POPULAR';position:absolute;top:-1px;right:1.5rem;background:var(--acid);color:var(--void);font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:800;letter-spacing:.12em;padding:.25rem .65rem}
+.tier-name{font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.65rem}
+.price-amount{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:3.2rem;color:var(--white);line-height:1;margin-bottom:.2rem}
+.price-amount sup{font-size:1.2rem;color:var(--muted);vertical-align:super}
+.price-per{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--muted);letter-spacing:.1em}
+.price-note{font-size:.8rem;color:var(--muted);margin:.8rem 0 1.5rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border)}
+.feat-list{list-style:none;margin-bottom:2rem}
+.feat-list li{font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--muted);padding:.45rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;letter-spacing:.02em}
+.feat-list li.on{color:var(--text)}
+.feat-list li.on .ck{color:var(--acid)}
+.feat-list li.off .ck{color:var(--border2)}
+.btn-plan{width:100%;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.73rem;letter-spacing:.12em;text-transform:uppercase;padding:.9rem;cursor:pointer;transition:all .18s;border:none}
+.btn-free{background:transparent;color:var(--muted);border:1px solid var(--border2)}
+.btn-free:hover{border-color:var(--growth);color:var(--growth)}
+.btn-pro{background:var(--acid);color:var(--void)}
+.btn-pro:hover{background:var(--white)}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2rem clamp(1.5rem,7vw,5rem)}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-brand{font-family:'JetBrains Mono',monospace;font-size:.7rem;display:flex;align-items:center;gap:6px}
+.footer-brand .arr{color:var(--growth)}
+.footer-brand .cur{display:inline-block;width:7px;height:.83em;background:var(--acid);margin-left:1px;vertical-align:bottom;animation:blink 1s step-end infinite}
+.footer-brand .rest{color:var(--muted)}
+.footer-links{display:flex;gap:1.5rem;list-style:none}
+.footer-links a{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--acid)}
+.footer-copy{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--border2)}
+
+/* ── MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(8,11,15,.95);backdrop-filter:blur(10px);z-index:600;align-items:center;justify-content:center;padding:1rem}
+.overlay.open{display:flex}
+.modal{background:var(--void2);border:1px solid var(--border2);width:100%;max-width:500px;max-height:92vh;overflow-y:auto}
+.modal-top{padding:1.25rem 1.75rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-mark{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:.78rem;color:var(--acid);letter-spacing:.06em;display:flex;align-items:center;gap:5px}
+.modal-mark .arr{color:var(--growth)}
+.modal-mark .cur{display:inline-block;width:7px;height:.83em;background:var(--acid);animation:blink 1s step-end infinite}
+.modal-mark .lbl{color:var(--muted);font-size:.65rem;font-weight:400;margin-left:4px}
+.modal-x{background:none;border:none;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:1rem;cursor:pointer;line-height:1;transition:color .2s}
+.modal-x:hover{color:var(--acid)}
+.modal-body{padding:1.75rem}
+.mstep{display:none}
+.mstep.active{display:block}
+.step-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:1.2rem}
+.mstep h3{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1rem;color:var(--white);margin-bottom:.4rem;letter-spacing:-.01em}
+.mstep p{font-size:.88rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+.fields{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem}
+.field{display:flex;flex-direction:column;gap:.3rem}
+.field label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+input[type=text],input[type=email],input[type=tel],textarea{width:100%;background:var(--void);border:1px solid var(--border2);color:var(--white);font-family:'JetBrains Mono',monospace;font-size:.83rem;padding:.7rem 1rem;outline:none;transition:border-color .2s;-webkit-appearance:none}
+input:focus,textarea:focus{border-color:var(--acid)}
+textarea{resize:vertical;min-height:65px}
+.spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1.4rem}
+.spec{background:var(--void);border:1px solid var(--border2);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:.65rem .4rem;cursor:pointer;transition:all .18s;text-align:center}
+.spec:hover{border-color:var(--dim);color:var(--growth)}
+.spec.on{border-color:var(--acid);color:var(--acid);background:rgba(181,255,77,.05)}
+.plan-box{background:var(--void);border:1px solid var(--border2);padding:1rem 1.2rem;margin-bottom:1.4rem;display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--muted)}
+.plan-box strong{color:var(--acid)}
+.trust{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--border2);text-align:center;margin-top:.6rem;letter-spacing:.05em}
+.mnav{display:flex;justify-content:space-between;align-items:center;margin-top:1rem}
+.dots{display:flex;gap:5px;align-items:center}
+.dot{width:6px;height:6px;background:var(--border2)}
+.dot.active{background:var(--acid)}
+.dot.done{background:var(--growth)}
+.btn-back{background:none;border:none;font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:color .2s}
+.btn-back:hover{color:var(--white)}
+.success{text-align:center;padding:.5rem 0}
+.success-tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--acid);margin-bottom:1rem}
+.success h3{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1.3rem;color:var(--white);margin-bottom:.4rem}
+.success p{font-size:.88rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+.meta{font-family:'JetBrains Mono',monospace;font-size:.7rem;border:1px solid var(--border);padding:.6rem 1rem;margin-bottom:.4rem;display:flex;justify-content:space-between}
+.meta .v{color:var(--acid)}
+
+/* ── DELLA WIDGET ── */
+#della-widget{position:fixed;bottom:16px;right:16px;z-index:8000;width:80px;height:130px;pointer-events:auto}
+#della-wrap{position:relative;width:70px;height:120px;display:flex;align-items:flex-end;justify-content:center}
+#della-bub{position:absolute;top:0;left:50%;transform:translateX(-50%);background:#fff;color:#111;font:700 8px/1.3 'Courier New',monospace;padding:3px 8px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.35);opacity:0;transition:opacity .3s;pointer-events:none;z-index:10;max-width:120px;text-align:center}
+#della-bub.on{opacity:1}
+#della-bub::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);border:4px solid transparent;border-bottom:none;border-top-color:#fff}
+#della-c{display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer}
+
+@media(max-width:640px){.nav-links{display:none}.step{border-right:none;border-bottom:1px solid var(--border)}.step:last-child{border-bottom:none}.hero-stats{gap:1.5rem}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <span class="arr">❯</span> y<span class="cur"></span>
+    <span class="sep">·</span>
+    <span class="sub">StitchDesk</span>
+  </a>
+  <div class="nav-r">
+    <ul class="nav-links">
+      <li><a href="#features">features</a></li>
+      <li><a href="#how">how it works</a></li>
+      <li><a href="#pricing">pricing</a></li>
+    </ul>
+    <button class="btn-nav" onclick="openModal('free')">❯ Start Free</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="position:relative;z-index:1">
+<div class="hero">
+  <div class="hero-prompt"><span class="g">--force</span> <span class="a">./stitchdesk</span> --mode=<span class="g">receptionist</span></div>
+  <div class="eyebrow">AI receptionist for upholstery shops</div>
+  <h1>NEVER MISS<br>A <span class="a">CUSTOMER</span><br><span class="g">AGAIN</span></h1>
+  <p class="hero-sub">Your AI receptionist <strong>answers every call, books every job</strong> — even when you're elbow-deep in fabric.</p>
+  <div class="hero-ctas">
+    <button class="btn-primary" onclick="openModal('pro')">❯ Start Free — 7 Days</button>
+    <a href="#how" class="btn-ghost">how it works ↓</a>
+  </div>
+  <div class="hero-stats">
+    <div><div class="stat-val">24/7</div><div class="stat-label">always answering</div></div>
+    <div><div class="stat-val">2 MIN</div><div class="stat-label">setup time</div></div>
+    <div><div class="stat-val">$0</div><div class="stat-label">cost for 7 days</div></div>
+    <div><div class="stat-val">∞</div><div class="stat-label">calls handled</div></div>
+  </div>
+</div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="inner">
+    <div class="tag">features</div>
+    <h2 class="section-title">Everything a receptionist<br>does — <em>automatically</em></h2>
+    <p class="section-sub">Built for upholstery shops. Knows the lingo, captures the right details, gets jobs booked.</p>
+    <div class="feat-grid">
+      <div class="feat"><div class="feat-id"><span class="n">[ 01 ]</span> call handling</div><div class="feat-title">Answers Every Call</div><div class="feat-desc">Never send a customer to voicemail. Your AI picks up instantly, 24/7.</div></div>
+      <div class="feat"><div class="feat-id"><span class="n">[ 02 ]</span> scheduling</div><div class="feat-title">Books Appointments</div><div class="feat-desc">Schedules consultations, pickups and deliveries directly to your calendar.</div></div>
+      <div class="feat"><div class="feat-id"><span class="n">[ 03 ]</span> intake</div><div class="feat-title">Qualifies Jobs</div><div class="feat-desc">Asks the right questions — furniture type, fabric, timeline — so you arrive prepared.</div></div>
+      <div class="feat"><div class="feat-id"><span class="n">[ 04 ]</span> recaps</div><div class="feat-title">Sends Call Summaries</div><div class="feat-desc">After every call you get a clean text recap. Nothing falls through the cracks.</div></div>
+      <div class="feat"><div class="feat-id"><span class="n">[ 05 ]</span> filtering</div><div class="feat-title">Blocks Spam & Robocalls</div><div class="feat-desc">Filters solicitors automatically. Only real customers get through to you.</div></div>
+      <div class="feat"><div class="feat-id"><span class="n">[ 06 ]</span> analytics</div><div class="feat-title">Business Dashboard</div><div class="feat-desc">Track every call, job, and booking from a clean mobile dashboard.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="inner">
+    <div class="tag">setup</div>
+    <h2 class="section-title">Live in <em>2 minutes</em></h2>
+    <p class="section-sub">Four steps from zero to a fully-running AI receptionist on your line.</p>
+    <div class="steps">
+      <div class="step"><div class="step-n">01</div><div class="step-title">Enter Your Details</div><div class="step-desc">Business name, phone, services. About 60 seconds.</div></div>
+      <div class="step"><div class="step-n">02</div><div class="step-title">AI Learns Your Business</div><div class="step-desc">StitchDesk customises the script to match your services and pricing style.</div></div>
+      <div class="step"><div class="step-n">03</div><div class="step-title">Go Live Instantly</div><div class="step-desc">Forward your line or use a dedicated number. AI answers the next call automatically.</div></div>
+      <div class="step"><div class="step-n">04</div><div class="step-title">Collect More Jobs</div><div class="step-desc">Wake up to booked appointments. Never miss a quote from the workshop.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="inner">
+    <div class="tag">pricing</div>
+    <h2 class="section-title">Less than one<br><em>missed job</em> per month</h2>
+    <p class="section-sub">Start free. No credit card needed. Cancel anytime.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="tier-name">Free</div>
+        <div class="price-amount"><sup>$</sup>0</div>
+        <div class="price-per">/ forever</div>
+        <div class="price-note">Perfect for getting started.</div>
+        <ul class="feat-list">
+          <li class="on"><span class="ck">✓</span> Up to 20 calls/month</li>
+          <li class="on"><span class="ck">✓</span> Call summaries via text</li>
+          <li class="on"><span class="ck">✓</span> Spam blocking</li>
+          <li class="off"><span class="ck">✗</span> Calendar booking</li>
+          <li class="off"><span class="ck">✗</span> Unlimited calls</li>
+          <li class="off"><span class="ck">✗</span> Job qualification flow</li>
+        </ul>
+        <button class="btn-plan btn-free" onclick="openModal('free')">Get Started Free</button>
+      </div>
+      <div class="price-card featured">
+        <div class="tier-name">Pro</div>
+        <div class="price-amount"><sup>$</sup>29</div>
+        <div class="price-per">/ month</div>
+        <div class="price-note">7-day free trial · Cancel anytime</div>
+        <ul class="feat-list">
+          <li class="on"><span class="ck">✓</span> Unlimited calls handled</li>
+          <li class="on"><span class="ck">✓</span> Auto-book to your calendar</li>
+          <li class="on"><span class="ck">✓</span> Job qualification script</li>
+          <li class="on"><span class="ck">✓</span> Call summaries via text</li>
+          <li class="on"><span class="ck">✓</span> Spam & robocall blocking</li>
+          <li class="on"><span class="ck">✓</span> Business dashboard</li>
+        </ul>
+        <button class="btn-plan btn-pro" onclick="openModal('pro')">❯ Start Free Trial</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="arr">❯</span> y<span class="cur"></span>
+      &nbsp;·&nbsp;
+      <span class="rest">--force ./stitchdesk &nbsp;·&nbsp; bedroom-built · neurodivergent-first</span>
+    </div>
+    <ul class="footer-links">
+      <li><a href="#">privacy</a></li>
+      <li><a href="#">terms</a></li>
+      <li><a href="#">support</a></li>
+    </ul>
+    <div class="footer-copy">© 2025 StitchDesk // CreativeFactory.studio</div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="modal-mark"><span class="arr">❯</span> y<span class="cur"></span><span class="lbl">· setup.init()</span></div>
+      <button class="modal-x" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="mstep active" id="s1">
+        <div class="step-label">// 01 of 03 — business details</div>
+        <h3>Set up your receptionist</h3>
+        <p>Tell us about your upholstery business.</p>
+        <div class="fields">
+          <div class="field"><label>Business Name</label><input type="text" id="bizName" placeholder="e.g. Ace Upholstery Co."/></div>
+          <div class="field"><label>Your Name</label><input type="text" id="ownerName" placeholder="First name"/></div>
+          <div class="field"><label>Phone Number</label><input type="tel" id="phone" placeholder="+1 (555) 000-0000"/></div>
+          <div class="field"><label>Email</label><input type="email" id="email" placeholder="you@yourbusiness.com"/></div>
+          <div class="field"><label>City / Region</label><input type="text" id="city" placeholder="e.g. Toronto, ON"/></div>
+        </div>
+        <div class="mnav">
+          <span></span>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+            <button class="btn-primary" style="font-size:.7rem;padding:.7rem 1.3rem" onclick="go(2)">Continue →</button>
+          </div>
+        </div>
+      </div>
+      <div class="mstep" id="s2">
+        <div class="step-label">// 02 of 03 — specialties</div>
+        <h3>What do you specialise in?</h3>
+        <p>Your AI receptionist will mention these to customers.</p>
+        <div class="spec-grid">
+          <button class="spec" onclick="this.classList.toggle('on')">🛋 Furniture</button>
+          <button class="spec" onclick="this.classList.toggle('on')">🚗 Auto</button>
+          <button class="spec" onclick="this.classList.toggle('on')">⛵ Marine</button>
+          <button class="spec" onclick="this.classList.toggle('on')">🪑 Cushions</button>
+          <button class="spec" onclick="this.classList.toggle('on')">🛏 Headboards</button>
+          <button class="spec" onclick="this.classList.toggle('on')">🏢 Commercial</button>
+        </div>
+        <div class="field" style="margin-bottom:1.4rem"><label>Anything else?</label><textarea placeholder="e.g. vintage restoration, boat interiors..."></textarea></div>
+        <div class="mnav">
+          <button class="btn-back" onclick="go(1)">← back</button>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="dots"><div class="dot done"></div><div class="dot active"></div><div class="dot"></div></div>
+            <button class="btn-primary" style="font-size:.7rem;padding:.7rem 1.3rem" onclick="go(3)">Continue →</button>
+          </div>
+        </div>
+      </div>
+      <div class="mstep" id="s3">
+        <div class="step-label" id="s3tag">// 03 of 03 — activate</div>
+        <h3 id="s3h">Start your free trial</h3>
+        <p id="s3p">No charge for 7 days. Cancel anytime.</p>
+        <div class="plan-box"><span>StitchDesk <strong id="planName">Pro</strong></span><span id="planAmt">$29/mo after trial</span></div>
+        <button class="btn-plan btn-pro" id="activateBtn" onclick="go(4)">❯ Activate Free Trial</button>
+        <div class="trust">🔒 Secured by Stripe — we never store your card details</div>
+        <div class="mnav" style="margin-top:1.2rem">
+          <button class="btn-back" onclick="go(2)">← back</button>
+          <div class="dots"><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div></div>
+        </div>
+      </div>
+      <div class="mstep" id="s4">
+        <div class="success">
+          <div class="success-tag">✓ receptionist.active</div>
+          <h3>You're all set!</h3>
+          <p>Your AI receptionist is being activated. You'll receive a text within 2 minutes with setup instructions.</p>
+          <div class="meta">Business <span class="v" id="rBiz">—</span></div>
+          <div class="meta">Plan <span class="v" id="rPlan">—</span></div>
+          <div class="meta">Phone <span class="v" id="rPhone">—</span></div>
+          <div class="meta">Status <span class="v">✓ Active</span></div>
+          <button class="btn-primary" style="margin-top:1.4rem;width:100%;font-size:.75rem" onclick="closeModal()">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELLA — inlined pixel mascot, no external file needed -->
+<div id="della-widget">
+  <div id="della-wrap">
+    <div id="della-bub"></div>
+    <canvas id="della-c"></canvas>
+  </div>
+</div>
+
+<script>
+/* ── MODAL ── */
+var plan='pro';
+function openModal(p){
+  plan=p;
+  var pro=p==='pro';
+  document.getElementById('planName').textContent=pro?'Pro':'Free';
+  document.getElementById('planAmt').textContent=pro?'$29/mo after trial':'$0 / forever';
+  document.getElementById('activateBtn').textContent=pro?'❯ Activate Free Trial':'❯ Activate Free Account';
+  document.getElementById('s3h').textContent=pro?'Start your free trial':'Activate your free account';
+  document.getElementById('s3p').textContent=pro?'No charge for 7 days. Cancel anytime.':'No credit card needed. Get started instantly.';
+  go(1);
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+function go(n){
+  document.querySelectorAll('.mstep').forEach(function(s){s.classList.remove('active')});
+  document.getElementById('s'+n).classList.add('active');
+  if(n===4){
+    document.getElementById('rBiz').textContent=document.getElementById('bizName').value||'—';
+    document.getElementById('rPlan').textContent='StitchDesk '+(plan==='pro'?'Pro':'Free');
+    document.getElementById('rPhone').textContent=document.getElementById('phone').value||'—';
+  }
+}
+
+/* ── DELLA MASCOT ── */
+(function(){
+  var COL={_:null,R:'#f21428',r:'#8c0a18',S:'#fdd9b5',E:'#1a1028',W:'#ffffff',p:'#ff9898',m:'#cc4040',K:'#ff79c6',k:'#c0448c',N:'#5a6aaa',n:'#3a4878',L:'#fdd9b5',B:'#181828',A:'#fdd9b5',G:'#c8ff00'};
+  var F0=['___RRRRRRRR___','__RRRrrrrRR___','___RSSSSSSR___','____SSSSSS____','____SEESEE____','____SGWSGW____','____SSSSSS____','____SpSSpS____','____SSmmSS____','____SSSSSS____','____SKKKKS____','___KKKKKKK____','A__KKKKKK_____','A__KKKKKKK____','___KKKKKKK____','___NNNNNNN____','__NNNNNNNNN___','__nNNNNNNNn___','____LL__LL____','____LL__LL____','___BBB__BBB___','___BBB__BBB___'];
+  var F1=['A___RRRRRRRR__','_A__RRRrrrrRR_','__A_RSSSSSSR__','____SSSSSS____','____SEESEE____','____SGWSGW____','____SSSSSS____','____SpSSpS____','____SSmmSS____','____SSSSSS____','____SKKKKS____','___KKKKKKK____','___KKKKKK_____','___KKKKKKK____','___KKKKKKK____','___NNNNNNN____','__NNNNNNNNN___','__nNNNNNNNn___','____LL__LL____','____LL__LL____','___BBB__BBB___','___BBB__BBB___'];
+  var WAVE=F0.map(function(r,i){if(i===0)return 'G__RRRRRRRR___';if(i===1)return 'G__RRRrrrrRR__';if(i===2)return 'G__RSSSSSSR__';return r;});
+  var blink=function(f){return f.map(function(r,i){return(i===4||i===5)?'____SSSSSS____':r;});};
+  var PX=4,W=14,H=22;
+  var cv=document.getElementById('della-c');
+  cv.width=W*PX;cv.height=H*PX;
+  var ctx=cv.getContext('2d');
+  var frame=0,isBlinking=false,isWaving=false,t=0;
+  var MSGS=['rm -rf doubt','❯ y_','build mode','you got this!','shipit ✦','(˶ᵔᵕᵔ˶)','let\'s go~','--force ./buildyou'];
+  var msgIdx=0;
+  var bub=document.getElementById('della-bub');
+  function draw(){
+    var rows=isWaving?WAVE:(isBlinking?blink(frame?F1:F0):(frame?F1:F0));
+    ctx.clearRect(0,0,cv.width,cv.height);
+    var by=Math.sin(t*0.04)*1.2;
+    ctx.save();ctx.translate(0,by);
+    rows.forEach(function(row,ri){row.split('').forEach(function(ch,ci){if(COL[ch]){ctx.fillStyle=COL[ch];ctx.fillRect(ci*PX,ri*PX,PX,PX);}});});
+    ctx.restore();
+  }
+  function tick(){
+    t++;
+    if(t%30===0&&!isWaving)frame=1-frame;
+    if(t%210===0){isBlinking=true;setTimeout(function(){isBlinking=false;},130);}
+    if(t%350===0){setTimeout(function(){isBlinking=true;setTimeout(function(){isBlinking=false;},130);},250);}
+    draw();requestAnimationFrame(tick);
+  }
+  function showBubble(msg){
+    bub.textContent=msg||MSGS[msgIdx++%MSGS.length];
+    bub.classList.add('on');
+    isWaving=true;
+    setTimeout(function(){isWaving=false;},700);
+    setTimeout(function(){bub.classList.remove('on');},2500);
+  }
+  setTimeout(function(){showBubble();},1500);
+  setInterval(function(){showBubble();},7000);
+  cv.addEventListener('click',function(){showBubble(MSGS[Math.floor(Math.random()*MSGS.length)]);});
+  tick();
+})();
+</script>
+</body>
+</html>
