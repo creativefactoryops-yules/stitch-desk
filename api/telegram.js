@@ -31,9 +31,8 @@ export default async function handler(req, res) {
         title: `StitchDesk — ${shop} — 1 Week Free Then $29/mo CAD`,
         description: `Agentic RAG living upholstery library + AI receptionist. First week free, then $29 CAD/mo. No purple. Just ship.`,
         payload: `stitchdesk_${shop}_${Date.now()}`,
-        provider_token: '', // Empty for Stars
         currency: 'XTR',
-        prices: [{ label: 'StitchDesk Monthly', amount: 2500 }], // Stars
+        prices: [{ label: 'StitchDesk Monthly', amount: 1050 }], // Stars: ~1050 Stars ≈ $29 CAD — VERIFY against live Star pack prices before first charge
         start_parameter: 'stitchdesk_pay'
       })
     }).catch(async () => {
@@ -44,10 +43,10 @@ Shop: ${shop}
 
 <b>Pay $29 CAD/mo:</b>
 1️⃣ Stars: This bot will support Stars soon — for now use e-Transfer
-2️⃣ e-Transfer: Send $29 CAD to <code>buildyou@gmail.com</code>
+2️⃣ e-Transfer: Send $29 CAD to <code>forcebuildyou@gmail.com</code>
 Message: StitchDesk + ${shop}
 
-Reply with screenshot after payment and I'll issue your forwarding number + live link: https://stitchdesk-deploy.vercel.app/?ref=${shop}
+Reply with screenshot after payment and I'll issue your forwarding number + live link: https://stitch-desk-sage.vercel.app/?ref=${shop}
 
 Agentic RAG library growing — foam, tufting, yardage, pricing. Value increases with time.`);
     });
@@ -69,7 +68,7 @@ Agentic RAG library growing — foam, tufting, yardage, pricing. Value increases
 
 Your StitchDesk is activating!
 
-Live link: https://stitchdesk-deploy.vercel.app/?ref=${process.env.SHOP_NAME || 'buildyou'}
+Live link: https://stitch-desk-sage.vercel.app/?ref=${process.env.SHOP_NAME || 'buildyou'}
 
 Forwarding number will be issued in 2 hours. Reply with your shop name + best call-forward number.
 
