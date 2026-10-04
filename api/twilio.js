@@ -15,10 +15,13 @@ export default async function handler(req, res) {
   const speech = form.SpeechResult || '';
   const from = form.From || 'unknown';
   const callSid = form.CallSid || Date.now().toString();
+
+  // White-label: every caller hears THEIR shop, never ours
+  const shopName = process.env.SHOP_NAME || 'BuildYou Upholstery';
   
   // Agentic RAG system prompt — baked in, no external DB needed for MVP
-  const systemPrompt = `You are Stitch — AI receptionist for BuildYou Upholstery. We rescue it, we save it, we build it, we make it.
-  Family-owned 15 years, Toronto. Voice: warm, fast, expert.
+  const systemPrompt = `You are Stitch — AI receptionist for ${shopName}.
+  Voice: warm, fast, expert. Never mention BuildYou or any other business name.
   
   SHOP TYPES: Furniture, Auto, Marine, Cushions, Commercial, Headboards.
   Ask: What type of furniture? Dimensions? Fabric? Timeline?
@@ -34,14 +37,14 @@ export default async function handler(req, res) {
   - Pricing 2024: Labour $95-145/hr, Sofa reupholst $1800-3200 + fabric
   
   FLOW:
-  1. Greet: Thanks for calling BuildYou Upholstery — we rescue it, we save it, we build it, we make it. This is Stitch.
+  1. Greet: Thanks for calling ${shopName} — this is Stitch, your AI receptionist.
   2. Ask furniture type
   3. Get details, give ballpark, book calendar
   4. SMS recap
   
   Keep replies under 25 seconds. No filler.`;
 
-  let reply = "Thanks for calling BuildYou Upholstery — we rescue it, we save it, we build it, we make it. This is Stitch, your AI receptionist. What type of furniture are we looking at — sofa, chair, commercial, headboard, auto, or marine?";
+  let reply = `Thanks for calling ${shopName} — this is Stitch, your AI receptionist. What type of furniture are we looking at — sofa, chair, commercial, headboard, auto, or marine?`;
   
   if (speech) {
     try {
@@ -65,7 +68,7 @@ export default async function handler(req, res) {
       reply = data.choices?.[0]?.message?.content || reply;
     } catch (e) {
       console.error('OpenAI error', e);
-      reply = "Got it — to help rescue your piece, what type of furniture and approximate size? A sofa, chair, headboard, auto or marine?";
+      reply = `Got it — what type of furniture and approximate size? A sofa, chair, headboard, auto or marine?`;
     }
 
     // Optional: Save learning to Supabase (free tier) — grows library value
@@ -92,7 +95,7 @@ export default async function handler(req, res) {
   <Gather input="speech" action="/api/twilio" method="POST" language="en-CA" speechTimeout="2" timeout="5">
     <Say voice="Polly.Amy-Neural">I'm listening.</Say>
   </Gather>
-  <Say voice="Polly.Amy-Neural">Thanks for calling BuildYou. We'll text you a recap. Goodbye.</Say>
+  <Say voice="Polly.Amy-Neural">Thanks for calling ${shopName}. We'll text you a recap. Goodbye.</Say>
   <Hangup/>
 </Response>`;
 
