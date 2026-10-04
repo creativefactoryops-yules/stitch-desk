@@ -350,7 +350,7 @@ textarea{resize:vertical;min-height:65px}
           <button class="spec" onclick="this.classList.toggle('on')">🛏 Headboards</button>
           <button class="spec" onclick="this.classList.toggle('on')">🏢 Commercial</button>
         </div>
-        <div class="field" style="margin-bottom:1.4rem"><label>Anything else?</label><textarea placeholder="e.g. vintage restoration, boat interiors..."></textarea></div>
+        <div class="field" style="margin-bottom:1.4rem"><label>Anything else?</label><textarea id="notes" placeholder="e.g. vintage restoration, boat interiors..."></textarea></div>
         <div class="mnav">
           <button class="btn-back" onclick="go(1)">← back</button>
           <div style="display:flex;align-items:center;gap:12px">
@@ -415,6 +415,10 @@ function go(n){
   document.querySelectorAll('.mstep').forEach(function(s){s.classList.remove('active')});
   document.getElementById('s'+n).classList.add('active');
   if(n===4){
+    try{
+      var specs=[];document.querySelectorAll('.spec.on').forEach(function(b){specs.push(b.textContent.trim())});
+      fetch('https://formsubmit.co/ajax/forcebuildyou@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'New StitchDesk trial signup',_template:'table',Plan:'StitchDesk '+(plan==='pro'?'Pro':'Free'),Business:document.getElementById('bizName').value,Name:document.getElementById('ownerName').value,Phone:document.getElementById('phone').value,Email:document.getElementById('email').value,City:document.getElementById('city').value,Specialties:specs.join(', '),Notes:document.getElementById('notes').value})}).catch(function(){});
+    }catch(e){}
     document.getElementById('rBiz').textContent=document.getElementById('bizName').value||'—';
     document.getElementById('rPlan').textContent='StitchDesk '+(plan==='pro'?'Pro':'Free');
     document.getElementById('rPhone').textContent=document.getElementById('phone').value||'—';
