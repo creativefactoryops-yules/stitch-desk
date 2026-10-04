@@ -8,6 +8,13 @@ export default async function handler(req, res) {
   const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
   if (!BOT_TOKEN) return res.status(200).send('no token');
 
+  // Webhook secret — set TELEGRAM_WEBHOOK_SECRET in Vercel and pass the same
+  // value as secret_token when calling setWebhook. Rejects forged updates.
+  const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
+  if (WEBHOOK_SECRET && req.headers['x-telegram-bot-api-secret-token'] !== WEBHOOK_SECRET) {
+    return res.status(401).send('bad secret');
+  }
+
   const sendMessage = async (chatId, text, opts={}) => {
     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
@@ -16,11 +23,27 @@ export default async function handler(req, res) {
     });
   };
 
-  // Handle /pay command — Stars
-  if (update.message?.text?.startsWith('/pay') || update.message?.text?.startsWith('/start')) {
+  // /start begins the 7-day concierge trial — no invoice yet. /pay bills $29 now.
+  const msgText = update.message?.text || '';
+  if (msgText.startsWith('/start') && !msgText.startsWith('/pay')) {
     const chatId = update.message.chat.id;
-    const shop = update.message.text.split(' ')[1] || process.env.SHOP_NAME || 'buildyou';
-    
+    const shop = msgText.split(' ')[1] || process.env.SHOP_NAME || 'buildyou';
+    await sendMessage(chatId, `🟢 <b>StitchDesk trial started — 7 days free</b>
+
+Shop: ${shop}
+
+Reply with:
+1️⃣ Your shop name
+2️⃣ The phone number we should forward calls to
+
+We'll set up your AI receptionist personally and text you when it's live. On day 7, send /pay to continue at $29 CAD/mo — or just reply here with questions.`);
+  }
+
+  // Handle /pay command — Stars
+  if (msgText.startsWith('/pay')) {
+    const chatId = update.message.chat.id;
+    const shop = msgText.split(' ')[1] || process.env.SHOP_NAME || 'buildyou';
+
     // Send invoice for 29 CAD via Stars (Telegram handles conversion)
     // For Stars, price in Stars: 29 CAD ~ 2500 Stars (adjust)
     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendInvoice`, {
