@@ -32,7 +32,7 @@ Your first 14 days are <b>free</b> — quote calculator, yardage, suppliers, inv
 
 Reply with a screenshot after e-transfer and I'll unlock your toolkit access.
 
-Live site: https://stitchdesk.vercel.app/?ref=${shop}`);
+Live site: https://stitch-desk-sage.vercel.app/?ref=${shop}`);
     return res.status(200).send('ok');
   }
 
