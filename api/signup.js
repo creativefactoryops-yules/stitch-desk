@@ -1,1 +1,51 @@
-Ly8gYXBpL3NpZ251cC5qcyDigJQgVHJpYWwgc2lnbnVwIG5vdGlmaWNhdGlvbi4KLy8gUE9TVCAvYXBpL3NpZ251cCB7bmFtZSwgYnVzaW5lc3NOYW1lLCBlbWFpbH0KLy8gU2VuZHMgWXVsZXMgYSBUZWxlZ3JhbSBtZXNzYWdlIHNvIHNoZSBrbm93cyB0aGUgbW9tZW50IGEgc2hvcCBzdGFydHMgYSB0cmlhbC4KLy8gRW52OiBURUxFR1JBTV9CT1RfVE9LRU4gKHNldCBpbiBWZXJjZWwpLCBPV05FUl9DSEFUX0lEIChZdWxlcydzIFRlbGVncmFtIGNoYXQgaWQpLgovLyBJZiBPV05FUl9DSEFUX0lEIGlzIG5vdCBzZXQsIGZhbGxzIGJhY2sgdG8gdGhlIG51bWVyaWMgaWQgYmVsb3cgKGEgY2hhdCBpZCBpcyBub3QgYSBzZWNyZXQpLgovLyBUaGUgYm90IHRva2VuIGlzIG5ldmVyIHJldHVybmVkIG9yIGxvZ2dlZC4KY29uc3QgT1dORVJfQ0hBVF9JRF9GQUxMQkFDSyA9IDc0OTgxODY5ODU7IC8vIFl1bGVzJ3MgVGVsZWdyYW0gY2hhdCBpZCwgZnJvbSBoZXIgL3N0YXJ0IE5vdiA2LCAyMDI2CgpmdW5jdGlvbiBlc2MocykgewogIHJldHVybiBTdHJpbmcocyA9PSBudWxsID8gJycgOiBzKQogICAgLnJlcGxhY2UoLyYvZywgJyZhbXA7JykucmVwbGFjZSgvPC9nLCAnJmx0OycpLnJlcGxhY2UoLz4vZywgJyZndDsnKTsKfQoKZXhwb3J0IGRlZmF1bHQgYXN5bmMgZnVuY3Rpb24gaGFuZGxlcihyZXEsIHJlcykgewogIGlmIChyZXEubWV0aG9kICE9PSAnUE9TVCcpIHJldHVybiByZXMuc3RhdHVzKDQwNSkianNvbih7IG9rOiBmYWxzZSwgZXJyb3I6ICdQT1NUIG9ubHknIH0pOwoKICBjb25zdCBCT1RfVE9LRU4gPSBwcm9jZXNzLmVudi5URUxFR1JBTV9CT1RfVE9LRU47CiAgY29uc3Qgb3duZXJDaGF0SWQgPSBwcm9jZXNzLmVudi5PV05FUl9DSEFUX0lEIHx8IE9XTkVSX0NIQVRfSURfRkFMTEJBQ0s7CiAgaWYgKCFCQVRfVE9LRU4pIHJldHVybiByZXMuc3RhdHVzKDUwMCkianNvbih7IG9rOiBmYWxzZSwgZXJyb3I6ICdURUxFR1JBTV9CT1RfVE9LRU4gbm90IHNldCcgfSk7CiAgaWYgKCFvd25lckNoYXRJZCkgcmV0dXJuIHJlcy5zdGF0dXMoNTAwKS5qc29uKHsgb2s6IGZhbHNlLCBlcnJvcjogJ09XTkVSX0NIQVRfSUQgbm90IGNvbmZpZ3VyZWQnIH0pOwoKICBsZXQgYm9keSA9IHJlcS5ib2R5OwogIGlmICh0eXBlb2YgYm9keSA9PT0gJ3N0cmluZycpIHsgdHJ5IHsgYm9keSA9IEpTT04ucGFyc2UoYm9keSk7IH0gY2F0Y2ggeyBib2R5ID0ge307IH0gfQogIGJvZHkgPSBib2R5IHx8IHt9OwogIGNvbnN0IG5hbWUgPSBTdHJpbmcoYm9keS5uYW1lIHx8ICcnKS50cmltKCk7CiAgY29uc3QgYnVzaW5lc3MgPSBTdHJpbmcoYm9keS5idXNpbmVzc05hbWUgfHwgYm9keS5idXNpbmVzcyB8fCAnJykudHJpbSgpOwogIGNvbnN0IGVtYWlsID0gU3RyaW5nKGJvZHkuZW1haWwgfHwgJycpLnRyaW0oKTsKICBpZiAoIW5hbWUgfHwgIWJ1c2luZXNzIHx8ICFlbWFpbCkgewogICAgcmV0dXJuIHJlcy5zdGF0dXMoNDAwKS5qc29uKHsgb2s6IGZhbHNlLCBlcnJvcjogJ25hbWUsIGJ1c2luZXNzTmFtZSBhbmQgZW1haWwgYXJlIHJlcXVpcmVkJyB9KTsKICB9CgogIGNvbnN0IHRleHQgPQogICAgYOKAjCDigJk8Yj5OZXcgU3RpdGNoRGVzayB0cmlhbCBzdGFydGVkPC9iPlxuXG4gYCArCiAgICBgPGI+TmFtZTo8L2I+ICR7ZXNjKG5hbWUpfVxuYCBgKwogICAgYDxiPkJ1c2luZXNzOjwvYj4gJHtlc2MoYnVzaW5lcyl9XG5gYCArCiAgICBgPGI+RW1haWw6PC9iPiAke2VzYyhlbWFpbCl9XG5gYCArCiAgICBgPGI+SGVuOjwvYj4gJHtuZXcgRGF0ZSgpLnRvSVNPU3RyaW5nKCl9YDsKCiAgdHJ5IHsKICAgIGNvbnN0IHIgPSBhd2FpdCBmZXRjaChgaHR0cHM6Ly9hcGkudGVsZWdyYW0ub3JnL2JvdCR7Qk9UX1RPS0VOfS9zZW5kTWVzc2FnZWAsIHsKICAgICAgbWV0aG9kOiAnUE9TVCcsCiAgICAgIGhlYWRlcnM6IHsgJ0NvbnRlbnQtVHlwZSc6ICdhcHBsaWNhdGlvbi9qc29uJyB9LAogICAgICBib2R5OiBKU09OLnN0cmluZ2lmeSh7IGNoYXRfaWQ6IG93bmVyQ2hhdElkLCB0ZXh0LCBwYXJzZV9tb2RlOiAnSFRNTCcgfSksCiAgICB9KTsKICAgIGNvbnN0IGogPSBhd2FpdCByLmpzb24oKTsKICAgIGlmICghai5vaykgcmV0dXJuIHJlcy5zdGF0dXMoNTAyKS5qc29uKHsgb2s6IGZhbHNlLCBlcnJvcjogai5kZXNjcmlwdGlvbiB8fCAnVGVsZWdyYW0gc2VuZCBmYWlsZWQnIH0pOwogICAgcmV0dXJuIHJlcy5zdGF0dXMoMjAwKS5qc29uKHsgb2s6IHRydWUgfSk7CiAgfSBjYXRjaCAoZSkgewogICAgcmV0dXJuIHJlcy5zdGF0dXMoNTAwKS5qc29uKHsgb2s6IGZhbHNlLCBlcnJvcjogU3RyaW5nKGUgJiYgZS5tZXNzYWdlID8gZS5tZXNzYWdlIDogZSkgfSk7CiAgfQp9Cg==
+// api/signup.js — Trial signup notification.
+// POST /api/signup {name, businessName, email}
+// Sends Yules a Telegram message so she knows the moment a shop starts a trial.
+// Env: TELEGRAM_BOT_TOKEN (set in Vercel), OWNER_CHAT_ID (Yules's Telegram chat id).
+// If OWNER_CHAT_ID is not set, falls back to the numeric id below (a chat id is not a secret).
+// The bot token is never returned or logged.
+const OWNER_CHAT_ID_FALLBACK = 7498186985; // Yules's Telegram chat id, from her /start Nov 6, 2026
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'POST only' });
+
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const ownerChatId = process.env.OWNER_CHAT_ID || OWNER_CHAT_ID_FALLBACK;
+  if (!BOT_TOKEN) return res.status(500).json({ ok: false, error: 'TELEGRAM_BOT_TOKEN not set' });
+  if (!ownerChatId) return res.status(500).json({ ok: false, error: 'OWNER_CHAT_ID not configured' });
+
+  let body = req.body;
+  if (typeof body === 'string') { try { body = JSON.parse(body); } catch { body = {}; } }
+  body = body || {};
+  const name = String(body.name || '').trim();
+  const business = String(body.businessName || body.business || '').trim();
+  const email = String(body.email || '').trim();
+  if (!name || !business || !email) {
+    return res.status(400).json({ ok: false, error: 'name, businessName and email are required' });
+  }
+
+  const text =
+    `\u{1F9F5} <b>New StitchDesk trial started</b>\n\n` +
+    `<b>Name:</b> ${esc(name)}\n` +
+    `<b>Business:</b> ${esc(business)}\n` +
+    `<b>Email:</b> ${esc(email)}\n` +
+    `<b>When:</b> ${new Date().toISOString()}`;
+
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: ownerChatId, text, parse_mode: 'HTML' }),
+    });
+    const j = await r.json();
+    if (!j.ok) return res.status(502).json({ ok: false, error: j.description || 'Telegram send failed' });
+    return res.status(200).json({ ok: true });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: String(e && e.message ? e.message : e) });
+  }
+}
