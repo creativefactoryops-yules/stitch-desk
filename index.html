@@ -1,472 +1,1201 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>StitchDesk — AI Receptionist // ❯ y_</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<link rel="icon" href="data:," />
+<title>StitchDesk Toolkit — --force ./buildyou</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --void:#080b0f;--void2:#0c1015;--surface:#111820;
-  --border:#1a2330;--border2:#222e3c;
-  --acid:#b5ff4d;--growth:#7fb069;--dim:#3d5a3e;
-  --text:#c9d4c0;--muted:#4a5a44;--white:#f0f4f0;
+  --bg:#0a100a; --panel:#101a10; --panel2:#162416; --panel3:#0d150d;
+  --ink:#e8f0e4; --muted:#9db198; --faint:#6f866b;
+  --line:#2b4229; --line2:#3a5a36;
+  --moss:#5f7f52; --acid:#b7e33d; --acid-dim:#8fbc2a; --acid-ink:#0a100a;
+  --copper:#c47c3d; --copper2:#e09a54; --red:#e06a5a; --focus:#c8f542;
+  --radius:8px;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{background:var(--void);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden}
-
-/* scanlines */
-body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.022) 2px,rgba(0,0,0,0.022) 4px);pointer-events:none;z-index:9000}
-
-/* dot grid */
-body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(rgba(127,176,105,0.06) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;z-index:0}
-
-@keyframes blink{50%{opacity:0}}
-@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-
-/* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:500;height:52px;background:rgba(8,11,15,0.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(1rem,5vw,3rem);justify-content:space-between}
-.nav-logo{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:0.82rem;color:var(--white);text-decoration:none}
-.nav-logo .arr{color:var(--growth)}
-.nav-logo .cur{display:inline-block;width:8px;height:0.88em;background:var(--acid);margin-left:1px;vertical-align:bottom;animation:blink 1s step-end infinite}
-.nav-logo .sep{color:var(--border2);margin:0 5px}
-.nav-logo .sub{font-size:0.62rem;color:var(--muted);font-weight:400;letter-spacing:0.08em}
-.nav-r{display:flex;align-items:center;gap:1.5rem}
-.nav-links{display:flex;gap:1.5rem;list-style:none}
-.nav-links a{font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
-.nav-links a:hover{color:var(--acid)}
-.btn-nav{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;background:var(--acid);color:var(--void);border:none;padding:0.45rem 1.1rem;cursor:pointer;transition:all .18s}
-.btn-nav:hover{background:var(--white)}
-
-/* ── HERO ── */
-.hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:7rem clamp(1.5rem,7vw,5rem) 4rem;max-width:1100px;margin:0 auto}
-.hero-prompt{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);letter-spacing:0.05em;margin-bottom:0.4rem;animation:up .4s ease both}
-.hero-prompt .g{color:var(--growth)}.hero-prompt .a{color:var(--acid)}
-.eyebrow{font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--growth);margin-bottom:1.6rem;display:flex;align-items:center;gap:8px;animation:up .4s .08s ease both}
-.eyebrow::before{content:'';width:18px;height:1px;background:var(--growth)}
-.hero h1{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:clamp(2.6rem,7vw,5.5rem);line-height:.97;color:var(--white);letter-spacing:-.03em;margin-bottom:1.6rem;animation:up .45s .14s ease both}
-.hero h1 .a{color:var(--acid)}.hero h1 .g{color:var(--growth)}
-.hero-sub{font-size:1.05rem;color:var(--muted);max-width:500px;margin-bottom:2.5rem;line-height:1.75;animation:up .45s .22s ease both}
-.hero-sub strong{color:var(--text);font-weight:500}
-.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:4rem;animation:up .45s .3s ease both}
-.hero-stats{display:flex;flex-wrap:wrap;gap:2.5rem;padding-top:2.5rem;border-top:1px solid var(--border);animation:up .45s .38s ease both}
-.stat-val{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1.9rem;color:var(--acid);line-height:1;margin-bottom:.2rem}
-.stat-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
-
-/* ── BUTTONS ── */
-.btn-primary{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;background:var(--acid);color:var(--void);border:none;padding:.9rem 2rem;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:6px}
-.btn-primary:hover{background:var(--white);transform:translateY(-1px)}
-.btn-ghost{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;background:transparent;color:var(--muted);border:1px solid var(--border2);padding:.9rem 2rem;cursor:pointer;transition:all .18s;text-decoration:none;display:inline-block}
-.btn-ghost:hover{border-color:var(--growth);color:var(--growth)}
-
-/* ── SECTION BASE ── */
-section{position:relative;z-index:1;padding:clamp(3rem,8vw,6rem) clamp(1.5rem,7vw,5rem)}
-.inner{max-width:1100px;margin:0 auto}
-.tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
-.tag::before{content:'//';color:var(--growth)}
-.section-title{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:clamp(1.6rem,4vw,2.8rem);color:var(--white);line-height:1.1;margin-bottom:.9rem;letter-spacing:-.025em}
-.section-title em{font-style:normal;color:var(--acid)}
-.section-sub{color:var(--muted);font-size:.95rem;max-width:500px;margin-bottom:3rem;line-height:1.7}
-
-/* ── FEATURES ── */
-#features{background:var(--void2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1px;background:var(--border);border:1px solid var(--border)}
-.feat{background:var(--void2);padding:2rem 1.8rem;position:relative;transition:background .2s}
-.feat:hover{background:var(--surface)}
-.feat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--border2);transition:background .2s}
-.feat:hover::before{background:var(--acid)}
-.feat-id{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);letter-spacing:.18em;text-transform:uppercase;margin-bottom:1rem}
-.feat-id .n{color:var(--growth)}
-.feat-title{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.95rem;color:var(--white);margin-bottom:.65rem;letter-spacing:-.01em}
-.feat-desc{font-size:.88rem;color:var(--muted);line-height:1.65}
-
-/* ── HOW IT WORKS ── */
-#how{background:var(--void)}
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));border:1px solid var(--border)}
-.step{padding:2rem 1.6rem;border-right:1px solid var(--border)}
-.step:last-child{border-right:none}
-.step-n{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:2rem;color:var(--border2);line-height:1;margin-bottom:1.2rem;transition:color .2s}
-.step:hover .step-n{color:var(--acid)}
-.step-title{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.88rem;color:var(--white);margin-bottom:.6rem}
-.step-desc{font-size:.85rem;color:var(--muted);line-height:1.65}
-
-/* ── PRICING ── */
-#pricing{background:var(--void2);border-top:1px solid var(--border)}
-.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;max-width:700px}
-.price-card{background:var(--void);border:1px solid var(--border2);padding:2.5rem 2rem;position:relative;transition:border-color .2s}
-.price-card:hover{border-color:var(--dim)}
-.price-card.featured{border-color:var(--acid);background:linear-gradient(160deg,rgba(181,255,77,.03) 0%,var(--void) 55%)}
-.price-card.featured::before{content:'★ MOST POPULAR';position:absolute;top:-1px;right:1.5rem;background:var(--acid);color:var(--void);font-family:'JetBrains Mono',monospace;font-size:.56rem;font-weight:800;letter-spacing:.12em;padding:.25rem .65rem}
-.tier-name{font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.65rem}
-.price-amount{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:3.2rem;color:var(--white);line-height:1;margin-bottom:.2rem}
-.price-amount sup{font-size:1.2rem;color:var(--muted);vertical-align:super}
-.price-per{font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--muted);letter-spacing:.1em}
-.price-note{font-size:.8rem;color:var(--muted);margin:.8rem 0 1.5rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border)}
-.feat-list{list-style:none;margin-bottom:2rem}
-.feat-list li{font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--muted);padding:.45rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;letter-spacing:.02em}
-.feat-list li.on{color:var(--text)}
-.feat-list li.on .ck{color:var(--acid)}
-.feat-list li.off .ck{color:var(--border2)}
-.btn-plan{width:100%;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.73rem;letter-spacing:.12em;text-transform:uppercase;padding:.9rem;cursor:pointer;transition:all .18s;border:none}
-.btn-free{background:transparent;color:var(--muted);border:1px solid var(--border2)}
-.btn-free:hover{border-color:var(--growth);color:var(--growth)}
-.btn-pro{background:var(--acid);color:var(--void)}
-.btn-pro:hover{background:var(--white)}
-
-/* ── FOOTER ── */
-footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2rem clamp(1.5rem,7vw,5rem)}
-.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
-.footer-brand{font-family:'JetBrains Mono',monospace;font-size:.7rem;display:flex;align-items:center;gap:6px}
-.footer-brand .arr{color:var(--growth)}
-.footer-brand .cur{display:inline-block;width:7px;height:.83em;background:var(--acid);margin-left:1px;vertical-align:bottom;animation:blink 1s step-end infinite}
-.footer-brand .rest{color:var(--muted)}
-.footer-links{display:flex;gap:1.5rem;list-style:none}
-.footer-links a{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
-.footer-links a:hover{color:var(--acid)}
-.footer-copy{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--border2)}
-
-/* ── MODAL ── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(8,11,15,.95);backdrop-filter:blur(10px);z-index:600;align-items:center;justify-content:center;padding:1rem}
-.overlay.open{display:flex}
-.modal{background:var(--void2);border:1px solid var(--border2);width:100%;max-width:500px;max-height:92vh;overflow-y:auto}
-.modal-top{padding:1.25rem 1.75rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.modal-mark{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:.78rem;color:var(--acid);letter-spacing:.06em;display:flex;align-items:center;gap:5px}
-.modal-mark .arr{color:var(--growth)}
-.modal-mark .cur{display:inline-block;width:7px;height:.83em;background:var(--acid);animation:blink 1s step-end infinite}
-.modal-mark .lbl{color:var(--muted);font-size:.65rem;font-weight:400;margin-left:4px}
-.modal-x{background:none;border:none;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:1rem;cursor:pointer;line-height:1;transition:color .2s}
-.modal-x:hover{color:var(--acid)}
-.modal-body{padding:1.75rem}
-.mstep{display:none}
-.mstep.active{display:block}
-.step-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:1.2rem}
-.mstep h3{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1rem;color:var(--white);margin-bottom:.4rem;letter-spacing:-.01em}
-.mstep p{font-size:.88rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
-.fields{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem}
-.field{display:flex;flex-direction:column;gap:.3rem}
-.field label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-input[type=text],input[type=email],input[type=tel],textarea{width:100%;background:var(--void);border:1px solid var(--border2);color:var(--white);font-family:'JetBrains Mono',monospace;font-size:.83rem;padding:.7rem 1rem;outline:none;transition:border-color .2s;-webkit-appearance:none}
-input:focus,textarea:focus{border-color:var(--acid)}
-textarea{resize:vertical;min-height:65px}
-.spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1.4rem}
-.spec{background:var(--void);border:1px solid var(--border2);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:.65rem .4rem;cursor:pointer;transition:all .18s;text-align:center}
-.spec:hover{border-color:var(--dim);color:var(--growth)}
-.spec.on{border-color:var(--acid);color:var(--acid);background:rgba(181,255,77,.05)}
-.plan-box{background:var(--void);border:1px solid var(--border2);padding:1rem 1.2rem;margin-bottom:1.4rem;display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--muted)}
-.plan-box strong{color:var(--acid)}
-.trust{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--border2);text-align:center;margin-top:.6rem;letter-spacing:.05em}
-.mnav{display:flex;justify-content:space-between;align-items:center;margin-top:1rem}
-.dots{display:flex;gap:5px;align-items:center}
-.dot{width:6px;height:6px;background:var(--border2)}
-.dot.active{background:var(--acid)}
-.dot.done{background:var(--growth)}
-.btn-back{background:none;border:none;font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:color .2s}
-.btn-back:hover{color:var(--white)}
-.success{text-align:center;padding:.5rem 0}
-.success-tag{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--acid);margin-bottom:1rem}
-.success h3{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:1.3rem;color:var(--white);margin-bottom:.4rem}
-.success p{font-size:.88rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
-.meta{font-family:'JetBrains Mono',monospace;font-size:.7rem;border:1px solid var(--border);padding:.6rem 1rem;margin-bottom:.4rem;display:flex;justify-content:space-between}
-.meta .v{color:var(--acid)}
-
-/* ── DELLA WIDGET ── */
-#della-widget{position:fixed;bottom:16px;right:16px;z-index:8000;width:80px;height:130px;pointer-events:auto}
-#della-wrap{position:relative;width:70px;height:120px;display:flex;align-items:flex-end;justify-content:center}
-#della-bub{position:absolute;top:0;left:50%;transform:translateX(-50%);background:#fff;color:#111;font:700 8px/1.3 'Courier New',monospace;padding:3px 8px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.35);opacity:0;transition:opacity .3s;pointer-events:none;z-index:10;max-width:120px;text-align:center}
-#della-bub.on{opacity:1}
-#della-bub::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);border:4px solid transparent;border-bottom:none;border-top-color:#fff}
-#della-c{display:block;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer}
-
-@media(max-width:640px){.nav-links{display:none}.step{border-right:none;border-bottom:1px solid var(--border)}.step:last-child{border-bottom:none}.hero-stats{gap:1.5rem}}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important} }
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"JetBrains Mono",ui-monospace,monospace;font-size:15.5px;line-height:1.6;
+  background-image:linear-gradient(rgba(183,227,61,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(183,227,61,.025) 1px,transparent 1px);background-size:28px 28px}
+h1,h2,h3{line-height:1.2;margin:0;font-weight:800}
+a{color:var(--acid)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px 64px}
+.prompt{color:var(--acid)} .prompt::before{content:"❯ "}
+.copper{color:var(--copper2)} .acid{color:var(--acid)} .muted{color:var(--muted)}
+/* terminal chrome */
+.termbar{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-bottom:none;background:var(--panel3);padding:9px 14px;border-radius:8px 8px 0 0;margin-top:18px;font-size:13px;color:var(--muted)}
+.dot{width:11px;height:11px;border-radius:50%;flex:none}
+.hero{border:1px solid var(--line);background:var(--panel);padding:28px 22px 24px;border-radius:0 0 8px 8px}
+.brandrow{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:baseline;font-size:13px;color:var(--muted);margin-bottom:18px}
+.brandrow .mark{font-size:20px;font-weight:800;color:var(--ink)} .brandrow .mark b{color:var(--acid)}
+.hero h1{font-size:clamp(28px,6vw,44px);letter-spacing:-.02em}
+.hero h1 .tk{color:var(--acid)}
+.tagline{display:inline-block;margin-top:12px;border:1px solid var(--copper);color:var(--copper2);padding:4px 10px;font-size:13px;border-radius:4px}
+.lede{color:var(--muted);max-width:660px;margin:14px 0 0;font-size:15.5px}
+.lede b{color:var(--ink)}
+.cmd{margin-top:18px;background:#060a06;border:1px solid var(--line);border-radius:6px;padding:12px 14px;font-size:13.5px;color:var(--muted);overflow-wrap:anywhere}
+.cmd .out{color:var(--ink)}
+/* pricing */
+.pricing{margin:22px 0 0;border:1px solid var(--copper);background:linear-gradient(180deg,#1a140c,var(--panel));border-radius:var(--radius);padding:24px 22px}
+.pricing h2{font-size:24px} .pricing h2 span{color:var(--copper2)}
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:16px}
+@media(max-width:760px){.price-grid{grid-template-columns:1fr}}
+.bignum{font-size:clamp(38px,7vw,52px);font-weight:800;color:var(--acid);line-height:1}
+.plist{list-style:none;margin:14px 0 0;padding:0}
+.plist li{padding:7px 0;border-bottom:1px dashed var(--line);font-size:14.5px}
+.plist li::before{content:"✓ ";color:var(--acid);font-weight:700}
+.paybox{background:#060a06;border:1px solid var(--line);border-radius:6px;padding:16px;font-size:14px}
+.paybox h3{font-size:15px;color:var(--copper2);margin-bottom:8px}
+.paybox p{margin:8px 0;color:var(--muted)} .paybox b{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;background:var(--acid);color:var(--acid-ink);border:none;border-radius:6px;padding:13px 20px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;min-height:48px;text-decoration:none}
+.btn:hover{background:#c8f542}
+.btn.copper{background:var(--copper);color:#140d06} .btn.copper:hover{background:var(--copper2)}
+.btn.secondary{background:transparent;color:var(--ink);border:1.5px solid var(--line2)}
+.btn.secondary:hover{border-color:var(--acid);color:var(--acid)}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.status{font-weight:700;margin-top:12px;min-height:24px;font-size:14px;color:var(--acid)}
+/* nav — static (not sticky) so it never covers content */
+.toolnav{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 4px;background:transparent;padding:0;position:static}
+.toolnav a{background:var(--panel);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:700;padding:10px 13px;border-radius:6px;font-size:13.5px;min-height:44px;display:inline-flex;align-items:center}
+.toolnav a:hover{border-color:var(--acid);color:var(--acid)}
+.toolnav a span{color:var(--copper2);margin-right:6px}
+/* every anchored section clears fully into view — nothing sticky to hide under */
+section.tool,section.pricing,section.access,[id]{scroll-margin-top:16px}
+@media(max-width:640px){
+  .toolnav{gap:6px;margin:16px 0 2px}
+  .toolnav a{padding:6px 9px;font-size:12.5px;min-height:36px;border-radius:5px;line-height:1.2}
+  .toolnav a span{margin-right:4px}
+}
+/* tools */
+section.tool{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px 20px;margin:20px 0}
+section.tool h2{font-size:22px} section.tool h2 .n{color:var(--copper2)}
+.tool-sub{color:var(--muted);margin:8px 0 20px;max-width:640px;font-size:14.5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+label.flabel{display:block;font-weight:700;margin:16px 0 6px;font-size:14px}
+label.flabel:first-child{margin-top:0}
+.hint{font-weight:400;color:var(--muted);font-size:12.5px;display:block}
+select,input[type=text],input[type=email],input[type=number],input[type=date],textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:6px;background:#060a06;color:var(--ink);font:inherit;font-size:15px;min-height:48px}
+select:focus,input:focus,textarea:focus{border-color:var(--acid)}
+textarea{min-height:70px;resize:vertical}
+input[type=range]{width:100%;min-height:32px;accent-color:var(--acid)}
+.range-row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+.checks{display:grid;gap:6px;margin-top:6px}
+.check{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;border:1.5px solid var(--line);border-radius:6px;cursor:pointer;min-height:48px;background:var(--panel3)}
+.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--acid);flex:none}
+.check b{display:block;font-size:14px} .check span{color:var(--muted);font-size:12.5px}
+.result{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:18px}
+.result h3{font-size:15px;margin-bottom:10px;color:var(--copper2)}
+.quote-num{font-size:clamp(32px,7vw,44px);font-weight:800;color:var(--acid);line-height:1.1}
+.brow{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14.5px}
+.brow:last-child{border-bottom:none} .brow .v{font-weight:700;white-space:nowrap;color:var(--acid)}
+.rangebar{margin-top:16px}
+.rangebar .track{height:10px;background:#060a06;border:1px solid var(--line);border-radius:99px;position:relative;margin:8px 0 4px}
+.rangebar .fill{position:absolute;top:0;bottom:0;background:var(--moss);border-radius:99px}
+.rangebar .marker{position:absolute;top:-4px;width:4px;height:16px;background:var(--acid);border-radius:2px}
+.rangebar .lbls{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin-top:14px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--copper2);padding:10px 8px;border-bottom:2px solid var(--line)}
+td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.num,th.num{text-align:right;white-space:nowrap}
+.table-scroll{overflow-x:auto}
+@media(max-width:640px){ table{font-size:13px} td,th{padding:8px 5px} section.tool{padding:20px 14px} }
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{border:1.5px solid var(--line);background:var(--panel3);color:var(--ink);border-radius:6px;padding:10px 14px;font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;min-height:44px}
+.chip[aria-pressed=true]{background:var(--acid);color:var(--acid-ink);border-color:var(--acid)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.scard{border:1px solid var(--line);border-radius:6px;padding:16px;background:var(--panel3)}
+.scard h3{font-size:17px}
+.cat{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--panel2);color:var(--acid);border:1px solid var(--line);padding:3px 9px;border-radius:4px;margin:6px 0 8px}
+.scard p{margin:6px 0;font-size:13.5px} .scard .best{color:var(--muted)}
+.lineitem{display:grid;grid-template-columns:1fr 70px 105px 44px;gap:8px;margin-bottom:8px;align-items:end}
+@media(max-width:560px){.lineitem{grid-template-columns:1fr 60px 92px 44px}}
+.delbtn{background:none;border:1.5px solid var(--line);border-radius:6px;min-height:48px;font-size:18px;cursor:pointer;color:var(--red)}
+.invoice-paper{background:#f4f1e8;color:#17211a;border-radius:6px;padding:24px 20px;font-size:14px}
+.invoice-paper h3{font-size:22px;color:#7a4416}
+.invoice-paper table td,.invoice-paper table th{border-color:#ddd6c2;color:#17211a}
+.invoice-paper .tot{text-align:right}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.vs{grid-template-columns:1fr}}
+.vs .col{border:1px solid var(--line);border-radius:6px;padding:16px;background:var(--panel3)}
+.vs h3{font-size:16px;margin-bottom:8px} .vs ul{margin:0;padding-left:18px;font-size:14px} .vs li{margin:5px 0}
+/* pipeline / inventory */
+.proj{border:1px solid var(--line);border-radius:6px;padding:13px 14px;background:var(--panel3);margin-bottom:8px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.proj .meta{font-size:13px;color:var(--muted)}
+.badge{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:4px;border:1px solid var(--line2);color:var(--acid)}
+.badge.done{color:var(--copper2);border-color:var(--copper)}
+.smallbtn{background:transparent;border:1.5px solid var(--line2);color:var(--ink);border-radius:6px;padding:8px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;min-height:40px}
+.smallbtn:hover{border-color:var(--acid);color:var(--acid)}
+.empty{border:1px dashed var(--line2);border-radius:6px;padding:18px;color:var(--muted);font-size:14px;text-align:center}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.stat{border:1px solid var(--line);border-radius:6px;background:var(--panel3);padding:14px}
+.stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.stat .val{font-size:24px;font-weight:800;color:var(--acid);margin-top:4px}
+.low{color:var(--red);font-weight:700}
+footer{color:var(--muted);font-size:13px;margin-top:30px;border-top:1px solid var(--line);padding-top:18px}
+footer p{margin:6px 0}
+/* trial gate / paywall */
+.access{margin:22px 0 0;border:1.5px solid var(--acid);background:var(--panel2);border-radius:var(--radius);padding:24px 22px}
+.access h2{font-size:24px} .access h2 span{color:var(--acid)}
+.trial-state{font-weight:700;font-size:15px;border:1px solid var(--line2);background:#060a06;border-radius:6px;padding:12px 14px;margin:16px 0}
+.trial-state b{color:var(--acid)}
+.daysbig{font-size:clamp(40px,8vw,56px);font-weight:800;color:var(--acid);line-height:1}
+.trialbar{height:10px;background:#060a06;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin:12px 0 4px}
+.trialbar .fill{height:100%;background:var(--acid);border-radius:99px}
+.lockwrap{position:relative}
+.lockwrap.is-locked .toolnav,.lockwrap.is-locked section.tool{filter:blur(5px);opacity:.35;pointer-events:none;user-select:none}
+.lockbanner{border:1.5px solid var(--copper);background:#1a140c;border-radius:var(--radius);padding:20px 22px;margin:22px 0 2px;font-size:15px}
+.lockbanner h2{font-size:21px;margin-bottom:8px}
+.lockbanner p{color:var(--muted);margin:6px 0}
+.lockbanner p b{color:var(--ink)}
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<!-- NAV -->
-<nav>
-  <a class="nav-logo" href="#">
-    <span class="arr">❯</span> y<span class="cur"></span>
-    <span class="sep">·</span>
-    <span class="sub">StitchDesk</span>
-  </a>
-  <div class="nav-r">
-    <ul class="nav-links">
-      <li><a href="#features">features</a></li>
-      <li><a href="#how">how it works</a></li>
-      <li><a href="#pricing">pricing</a></li>
-    </ul>
-    <button class="btn-nav" onclick="openModal('free')">❯ Start Free</button>
+<div class="termbar" aria-hidden="true"><span class="dot" style="background:#e06a5a"></span><span class="dot" style="background:#e0a83e"></span><span class="dot" style="background:#b7e33d"></span><span style="margin-left:8px">~/stitchdesk — toolkit.sh</span></div>
+<header class="hero">
+  <div class="brandrow">
+    <span class="mark">❯ <b>y_</b></span>
+    <span>--force ./buildyou</span>
+    <span>Creative Factory Studio</span>
   </div>
+  <h1>StitchDesk <span class="tk">Toolkit</span></h1>
+  <span class="tagline">$ rm -rf doubt</span>
+  <p class="lede">Ten working tools for upholstery &amp; furniture shops — <b>quote calculator, fabric yardage, pattern matching, price reference, suppliers, project pipeline, fabric inventory, smart scheduling, shop analytics, and invoice builder</b>. Price a job, check fabric before you order, track the work, and send a clean invoice. Pricing data is based on the HomeGuide 2026 reupholstery cost guide.</p>
+  <div class="cmd" aria-hidden="true"><span class="prompt"></span>./stitchdesk --tools<br><span class="out">10 tools loaded · locked until you start the free 14-day trial below · no phone service · no call answering — just the toolkit</span></div>
+</header>
+
+<!-- ============ TRIAL GATE / ACCESS ============ -->
+<section class="access" id="trial" aria-labelledby="trial-h">
+  <h2 id="trial-h">Start here <span>— 14-day free trial, then $20/month</span></h2>
+  <p class="trial-state" id="trialStateLine" role="status" aria-live="polite">Checking the trial status saved in this browser…</p>
+
+  <div id="gateStart">
+    <p style="color:var(--muted);margin:0 0 6px">The 10 tools below stay <b style="color:var(--ink)">locked</b> until you start the trial. Fill in these three fields and all 10 tools unlock on this page, right away, for 14 days. No credit card.</p>
+    <div class="grid2">
+      <div>
+        <label class="flabel" for="tName">Your name</label>
+        <input type="text" id="tName" autocomplete="name" placeholder="e.g. Sam Rivera">
+        <label class="flabel" for="tBiz">Business name</label>
+        <input type="text" id="tBiz" autocomplete="organization" placeholder="e.g. Maple Street Upholstery">
+        <label class="flabel" for="tEmail">Email</label>
+        <input type="email" id="tEmail" autocomplete="email" placeholder="e.g. hello@yourshop.ca">
+        <div class="btnrow"><button class="btn" type="button" id="startTrialBtn">Start my 14-day free trial →</button></div>
+        <p class="status" id="startTrialStatus" aria-live="polite"></p>
+      </div>
+      <div>
+        <div class="paybox">
+          <h3>❯ What happens, plainly</h3>
+          <p><b>Days 1–14:</b> all 10 tools work in full. A counter at the top of this section always shows how many trial days you have left.</p>
+          <p><b>When day 14 ends:</b> the tools lock again on this page. Nothing is deleted and nothing is charged — there is no card on file and no auto-charge.</p>
+          <p><b>To keep using them:</b> pay <b>$20 CAD/month</b> by Telegram Stars or Interac e-transfer to <b class="acid">forcebuildyou@gmail.com</b> (details in Pricing below), then unlock below.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="gateActive" hidden>
+    <div class="grid2">
+      <div>
+        <div class="k" style="font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Trial days left</div>
+        <div class="daysbig"><span id="daysLeftNum">14</span> <span style="font-size:19px">days</span></div>
+        <div class="trialbar" aria-hidden="true"><div class="fill" id="trialBarFill" style="width:100%"></div></div>
+        <p class="note" id="trialWho" style="color:var(--ink);font-size:14px"></p>
+        <p class="note">Trial ends <b style="color:var(--ink)" id="trialEndDate"></b>. All 10 tools below are unlocked until then.</p>
+      </div>
+      <div>
+        <div class="paybox">
+          <h3>❯ When the trial ends</h3>
+          <p>The tools <b>lock</b> — calculators, pipeline, inventory, scheduling, analytics, and the invoice builder all stop working on this page until you pay.</p>
+          <p>There is <b>no auto-charge</b>: no card was taken, so nothing can be billed. To keep going it's <b>$20 CAD/month</b> by Telegram Stars or Interac e-transfer to <b class="acid">forcebuildyou@gmail.com</b>.</p>
+          <p>Paid already during your trial? Use the unlock button in the Pricing section below after your trial ends, or email <b>forcebuildyou@gmail.com</b> with your business name.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="gateExpired" hidden>
+    <p style="color:var(--muted);margin:0 0 6px">Your 14-day trial ended on <b style="color:var(--ink)" id="expiredWhen"></b>, so the tools below are locked. To unlock them for another 30 days:</p>
+    <div class="grid2">
+      <div>
+        <div class="paybox">
+          <h3>❯ Step 1 — Pay $20 CAD for the month</h3>
+          <p><b>Telegram Stars:</b> message on Telegram to be sent the Stars payment step, or email and ask for it.</p>
+          <p><b>Interac e-transfer:</b> send <b>$20 CAD</b> to <b class="acid">forcebuildyou@gmail.com</b> and put <b id="expiredBiz">your business name</b> in the e-transfer message so the payment can be matched.</p>
+          <div class="btnrow">
+            <button class="btn copper" type="button" id="copyPayEmail2">Copy e-transfer email</button>
+            <a class="btn secondary" href="mailto:forcebuildyou@gmail.com?subject=StitchDesk%20Toolkit%20%E2%80%94%20%2420%20payment%20sent">Email: payment sent</a>
+          </div>
+          <p class="status" id="payStatus2" aria-live="polite"></p>
+        </div>
+      </div>
+      <div>
+        <div class="paybox">
+          <h3>❯ Step 2 — Unlock this browser</h3>
+          <p>Once you've sent the $20, tap the button below. It unlocks the tools <b>in this browser</b> for 30 days from today.</p>
+          <p>Honest note: this page has no server, so it <b>cannot check your payment itself</b> — unlocking runs on trust, and your e-transfer is matched by business name on the receiving end. If a payment can't be matched, access can be ended and the trial data cleared.</p>
+          <div class="btnrow"><button class="btn paid-unlock-btn" type="button">I've sent the $20 — unlock for 30 days →</button></div>
+          <p class="status paid-unlock-status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="gatePaid" hidden>
+    <div class="grid2">
+      <div>
+        <div class="k" style="font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Paid access — days left</div>
+        <div class="daysbig"><span id="paidDaysNum">30</span> <span style="font-size:19px">days</span></div>
+        <p class="note" style="color:var(--ink);font-size:14px">Paid access in this browser runs until <b id="paidUntilDate"></b>. All 10 tools below are unlocked.</p>
+      </div>
+      <div>
+        <div class="paybox">
+          <h3>❯ When this month ends</h3>
+          <p>The tools lock again. Renew the same way: <b>$20 CAD</b> by Telegram Stars or Interac e-transfer to <b class="acid">forcebuildyou@gmail.com</b>, then unlock for the next 30 days. No subscription is stored and nothing auto-renews.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:18px"><b style="color:var(--ink)">How this trial actually works — no fine print:</b> this is a <b style="color:var(--ink)">local trial stored only in your own browser</b> (browser local storage on this device). It is <b style="color:var(--ink)">not an account</b> and there is <b style="color:var(--ink)">no server check</b> — your name, business name, and email are saved on this device only and are never sent anywhere by this page. That also means the trial lives in this one browser: using a different browser or device, private/incognito mode, or clearing your browser data will reset it, and the lock is a browser lock, not server security. Your details are used only so a payment can be matched to your shop.</p>
+  <div class="btnrow" id="resetRow" hidden>
+    <button class="btn secondary" type="button" id="resetTrialBtn">Clear the trial data saved in this browser</button>
+  </div>
+  <p class="status" id="resetStatus" aria-live="polite"></p>
+</section>
+
+<!-- ============ PRICING / PAYWALL ============ -->
+<section class="pricing" id="pricing" aria-labelledby="price-h">
+  <h2 id="price-h">Pricing <span>— one plan, everything in</span></h2>
+  <div class="price-grid">
+    <div>
+      <div class="bignum">$20<span style="font-size:18px;color:var(--muted)"> / month</span></div>
+      <ul class="plist">
+        <li>All 10 tools — calculators, pipeline, inventory, scheduling, analytics, invoices</li>
+        <li>14-day free trial first</li>
+        <li>No credit card needed for the trial</li>
+        <li>Cancel any time — no contract</li>
+      </ul>
+      <div class="btnrow">
+        <a class="btn" href="#trial">Start the 14-day free trial →</a>
+      </div>
+      <p class="note">The trial starts on this page, in the section above — name, business name, and email, saved only in your own browser. No card, no account, no auto-charge at the end of the 14 days. When it ends, the tools lock until the $20 month is paid.</p>
+    </div>
+    <div class="paybox">
+      <h3>❯ How you pay (after the trial)</h3>
+      <p><b>Option 1 — Telegram Stars</b><br>Pay in Telegram Stars inside Telegram. Message to set it up on the same email below and you’ll be sent the Stars payment step.</p>
+      <p><b>Option 2 — Interac e-transfer</b><br>Send <b>$20 CAD</b> to:</p>
+      <p style="font-size:16px"><b class="acid">forcebuildyou@gmail.com</b></p>
+      <p>Put your shop name in the e-transfer message so the payment can be matched to your account. No Stripe, no card on file.</p>
+      <div class="btnrow">
+        <button class="btn copper" type="button" id="copyPayEmail">Copy e-transfer email</button>
+        <a class="btn secondary" href="mailto:forcebuildyou@gmail.com?subject=StitchDesk%20Toolkit%20%E2%80%94%20%2420%2Fmonth">Email to subscribe</a>
+      </div>
+      <p class="status" id="payStatus" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+<nav class="toolnav" aria-label="Tools">
+  <a href="#calculator"><span>01</span>Quote</a>
+  <a href="#yardage"><span>02</span>Yardage</a>
+  <a href="#pattern"><span>03</span>Pattern matching</a>
+  <a href="#prices"><span>04</span>Prices</a>
+  <a href="#suppliers"><span>05</span>Suppliers</a>
+  <a href="#pipeline"><span>06</span>Pipeline</a>
+  <a href="#inventory"><span>07</span>Inventory</a>
+  <a href="#scheduling"><span>08</span>Scheduling</a>
+  <a href="#analytics"><span>09</span>Analytics</a>
+  <a href="#invoice"><span>10</span>Invoice</a>
+  <a href="#pricing"><span>$</span>Pricing</a>
 </nav>
 
-<!-- HERO -->
-<div style="position:relative;z-index:1">
-<div class="hero">
-  <div class="hero-prompt"><span class="g">--force</span> <span class="a">./stitchdesk</span> --mode=<span class="g">receptionist</span></div>
-  <div class="eyebrow">AI receptionist for upholstery shops</div>
-  <h1>NEVER MISS<br>A <span class="a">CUSTOMER</span><br><span class="g">AGAIN</span></h1>
-  <p class="hero-sub">Your AI receptionist <strong>answers every call, books every job</strong> — even when you're elbow-deep in fabric.</p>
-  <div class="hero-ctas">
-    <button class="btn-primary" onclick="openModal('pro')">❯ Start Free — 7 Days</button>
-    <a href="#how" class="btn-ghost">how it works ↓</a>
-  </div>
-  <div class="hero-stats">
-    <div><div class="stat-val">24/7</div><div class="stat-label">always answering</div></div>
-    <div><div class="stat-val">2 MIN</div><div class="stat-label">setup time</div></div>
-    <div><div class="stat-val">$0</div><div class="stat-label">cost for 7 days</div></div>
-    <div><div class="stat-val">∞</div><div class="stat-label">calls handled</div></div>
-  </div>
-</div>
-</div>
-
-<!-- FEATURES -->
-<section id="features">
-  <div class="inner">
-    <div class="tag">features</div>
-    <h2 class="section-title">Everything a receptionist<br>does — <em>automatically</em></h2>
-    <p class="section-sub">Built for upholstery shops. Knows the lingo, captures the right details, gets jobs booked.</p>
-    <div class="feat-grid">
-      <div class="feat"><div class="feat-id"><span class="n">[ 01 ]</span> call handling</div><div class="feat-title">Answers Every Call</div><div class="feat-desc">Never send a customer to voicemail. Your AI picks up instantly, 24/7.</div></div>
-      <div class="feat"><div class="feat-id"><span class="n">[ 02 ]</span> scheduling</div><div class="feat-title">Books Appointments</div><div class="feat-desc">Schedules consultations, pickups and deliveries directly to your calendar.</div></div>
-      <div class="feat"><div class="feat-id"><span class="n">[ 03 ]</span> intake</div><div class="feat-title">Qualifies Jobs</div><div class="feat-desc">Asks the right questions — furniture type, fabric, timeline — so you arrive prepared.</div></div>
-      <div class="feat"><div class="feat-id"><span class="n">[ 04 ]</span> recaps</div><div class="feat-title">Sends Call Summaries</div><div class="feat-desc">After every call you get a clean text recap. Nothing falls through the cracks.</div></div>
-      <div class="feat"><div class="feat-id"><span class="n">[ 05 ]</span> filtering</div><div class="feat-title">Blocks Spam & Robocalls</div><div class="feat-desc">Filters solicitors automatically. Only real customers get through to you.</div></div>
-      <div class="feat"><div class="feat-id"><span class="n">[ 06 ]</span> analytics</div><div class="feat-title">Business Dashboard</div><div class="feat-desc">Track every call, job, and booking from a clean mobile dashboard.</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW IT WORKS -->
-<section id="how">
-  <div class="inner">
-    <div class="tag">setup</div>
-    <h2 class="section-title">Live in <em>2 minutes</em></h2>
-    <p class="section-sub">Four steps from zero to a fully-running AI receptionist on your line.</p>
-    <div class="steps">
-      <div class="step"><div class="step-n">01</div><div class="step-title">Enter Your Details</div><div class="step-desc">Business name, phone, services. About 60 seconds.</div></div>
-      <div class="step"><div class="step-n">02</div><div class="step-title">AI Learns Your Business</div><div class="step-desc">StitchDesk customises the script to match your services and pricing style.</div></div>
-      <div class="step"><div class="step-n">03</div><div class="step-title">Go Live Instantly</div><div class="step-desc">Forward your line or use a dedicated number. AI answers the next call automatically.</div></div>
-      <div class="step"><div class="step-n">04</div><div class="step-title">Collect More Jobs</div><div class="step-desc">Wake up to booked appointments. Never miss a quote from the workshop.</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section id="pricing">
-  <div class="inner">
-    <div class="tag">pricing</div>
-    <h2 class="section-title">Less than one<br><em>missed job</em> per month</h2>
-    <p class="section-sub">Start free. No credit card needed. Cancel anytime.</p>
-    <div class="pricing-grid">
-      <div class="price-card">
-        <div class="tier-name">Free</div>
-        <div class="price-amount"><sup>$</sup>0</div>
-        <div class="price-per">/ forever</div>
-        <div class="price-note">Perfect for getting started.</div>
-        <ul class="feat-list">
-          <li class="on"><span class="ck">✓</span> Up to 20 calls/month</li>
-          <li class="on"><span class="ck">✓</span> Call summaries via text</li>
-          <li class="on"><span class="ck">✓</span> Spam blocking</li>
-          <li class="off"><span class="ck">✗</span> Calendar booking</li>
-          <li class="off"><span class="ck">✗</span> Unlimited calls</li>
-          <li class="off"><span class="ck">✗</span> Job qualification flow</li>
-        </ul>
-        <button class="btn-plan btn-free" onclick="openModal('free')">Get Started Free</button>
+<!-- ============ 1 QUOTE CALCULATOR ============ -->
+<section class="tool" id="calculator" aria-labelledby="calc-h">
+  <h2 id="calc-h"><span class="n">01 ·</span> Quote calculator</h2>
+  <p class="tool-sub">Pick the piece and the extras. Fabric and labour amounts fill in from typical jobs — change any number to match your shop.</p>
+  <div class="grid2">
+    <div>
+      <label class="flabel" for="furnType">Furniture type</label>
+      <select id="furnType"></select>
+      <label class="flabel" for="yards">Fabric needed <span class="hint">Yards — auto-filled, edit if your piece runs bigger or smaller</span></label>
+      <input type="number" id="yards" min="0" step="0.5" value="13">
+      <label class="flabel" for="fabricPrice">Fabric price per yard <span class="hint">HomeGuide average range: $30–$60 per yard</span></label>
+      <input type="range" id="fabricPrice" min="20" max="120" step="1" value="45" aria-describedby="fabricPriceVal">
+      <div class="range-row"><span>$20</span><span id="fabricPriceVal">$45 / yard</span><span>$120</span></div>
+      <label class="flabel" for="hours">Labour hours <span class="hint">Your best estimate for strip-down to finish</span></label>
+      <input type="number" id="hours" min="0" step="0.5" value="12">
+      <label class="flabel" for="laborRate">Labour rate per hour <span class="hint">HomeGuide range: $50–$100 per hour</span></label>
+      <input type="range" id="laborRate" min="40" max="130" step="1" value="75" aria-describedby="laborRateVal">
+      <div class="range-row"><span>$40</span><span id="laborRateVal">$75 / hour</span><span>$130</span></div>
+      <span class="flabel" id="extras-label">Extras on this job</span>
+      <div class="checks" role="group" aria-labelledby="extras-label">
+        <label class="check"><input type="checkbox" class="extra-pct" value="12.5" data-name="Pattern matching"><span><b>Pattern matching</b><span>Stripes, plaids, repeats · +10–15%</span></span></label>
+        <label class="check"><input type="checkbox" class="extra-pct" value="25" data-name="Leather work"><span><b>Leather work</b><span>Heavier material, slower sewing · +20–30%</span></span></label>
+        <label class="check"><input type="checkbox" class="extra-pct" value="10" data-name="White / light fabric"><span><b>White or very light fabric</b><span>Extra handling to keep it clean · +10%</span></span></label>
+        <label class="check"><input type="checkbox" class="extra-pct" value="20" data-name="Rush service"><span><b>Rush service</b><span>Jumping the queue · +15–25%</span></span></label>
+        <label class="check"><input type="checkbox" class="extra-flat" value="300" data-name="Tufting"><span><b>Tufting</b><span>Deep or diamond tufting · +$200–$400 flat</span></span></label>
+        <label class="check"><input type="checkbox" class="extra-flat" value="150" data-name="Restuffing cushions"><span><b>Restuffing cushions</b><span>New foam / fill · +$150 flat</span></span></label>
+        <label class="check"><input type="checkbox" class="extra-flat" value="100" data-name="Pickup &amp; delivery"><span><b>Pickup &amp; delivery</b><span>Both trips · +$50–$150 flat</span></span></label>
       </div>
-      <div class="price-card featured">
-        <div class="tier-name">Pro</div>
-        <div class="price-amount"><sup>$</sup>29</div>
-        <div class="price-per">/ month</div>
-        <div class="price-note">7-day free trial · Cancel anytime</div>
-        <ul class="feat-list">
-          <li class="on"><span class="ck">✓</span> Unlimited calls handled</li>
-          <li class="on"><span class="ck">✓</span> Auto-book to your calendar</li>
-          <li class="on"><span class="ck">✓</span> Job qualification script</li>
-          <li class="on"><span class="ck">✓</span> Call summaries via text</li>
-          <li class="on"><span class="ck">✓</span> Spam & robocall blocking</li>
-          <li class="on"><span class="ck">✓</span> Business dashboard</li>
-        </ul>
-        <button class="btn-plan btn-pro" onclick="openModal('pro')">❯ Start Free Trial</button>
+    </div>
+    <div>
+      <div class="result" role="status" aria-live="polite">
+        <h3>❯ your quote</h3>
+        <div class="quote-num" id="quoteTotal">$1,785</div>
+        <div style="margin-top:14px">
+          <div class="brow"><span>Fabric</span><span class="v" id="bFabric">$585</span></div>
+          <div class="brow"><span>Labour</span><span class="v" id="bLabor">$1,200</span></div>
+          <div class="brow"><span>Extras</span><span class="v" id="bExtras">$0</span></div>
+          <div class="brow"><span>Suggested deposit (50%)</span><span class="v" id="bDeposit">$893</span></div>
+        </div>
+        <div class="rangebar">
+          <div style="font-weight:700;font-size:14px">HomeGuide 2026 range for this piece</div>
+          <div class="track"><div class="fill" id="rbFill"></div><div class="marker" id="rbMarker"></div></div>
+          <div class="lbls"><span id="rbLow">$600</span><span>Average <span id="rbAvg">$1,050</span></span><span id="rbHigh">$1,500</span></div>
+          <p class="note" id="rbNote"></p>
+        </div>
+        <div class="btnrow">
+          <button class="btn" type="button" id="sendToInvoice">Send this quote to the invoice ↓</button>
+          <button class="btn secondary" type="button" id="copyQuote">Copy quote text</button>
+        </div>
+        <p class="status" id="quoteStatus" aria-live="polite"></p>
+      </div>
+      <p class="note">Formula: (yards × fabric price) + (hours × labour rate), then percentage extras on that subtotal, then flat extras. This is an estimate to start the conversation — the final price is yours to set after you see the piece.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 YARDAGE ============ -->
+<section class="tool" id="yardage" aria-labelledby="yard-h">
+  <h2 id="yard-h"><span class="n">02 ·</span> Fabric yardage calculator</h2>
+  <p class="tool-sub">Standard yardage for 54-inch fabric, plain weave, no pattern repeat. Add extra for stripes, plaids, and large repeats — the calculator does that math for you.</p>
+  <div class="grid2">
+    <div>
+      <label class="flabel" for="yPiece">Piece</label>
+      <select id="yPiece"></select>
+      <label class="flabel" for="yWidth">Fabric width</label>
+      <select id="yWidth">
+        <option value="1">54 in — standard upholstery width</option>
+        <option value="1.2">45 in — order about 20% more</option>
+        <option value="1.5">36 in — order about 50% more</option>
+        <option value="0.9">60 in+ — order about 10% less</option>
+      </select>
+      <label class="flabel" for="yPattern">Pattern</label>
+      <select id="yPattern">
+        <option value="1">Plain / solid — no matching</option>
+        <option value="1.1">Stripes or plaid — add 10%</option>
+        <option value="1.15">Small repeat — add 15%</option>
+        <option value="1.25">Large repeat — add 25%</option>
+      </select>
+      <label class="check" style="margin-top:16px"><input type="checkbox" id="yWaste" checked><span><b>Add 10% cutting waste</b><span>Recommended — seams, flaws, and one mistake</span></span></label>
+    </div>
+    <div>
+      <div class="result" role="status" aria-live="polite">
+        <h3>❯ order this much</h3>
+        <div class="quote-num"><span id="yResult">14.5</span> <span style="font-size:19px">yards</span></div>
+        <p class="note" id="yBreakdown" style="color:var(--ink);font-size:14.5px"></p>
+        <p class="note">Round up to the nearest half yard when you order. If the fabric is the client's own, ask for the full amount plus waste before you book the job — running short mid-job is the most common upholstery delay.</p>
       </div>
     </div>
   </div>
+  <h3 style="margin:26px 0 10px;font-size:17px">Sofa yardage by style</h3>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Sofa style</th><th class="num">Fabric (yards)</th><th class="num">Total cost range</th></tr></thead>
+    <tbody>
+      <tr><td>6′ standard sofa</td><td class="num">12–14</td><td class="num">$600–$1,500</td></tr>
+      <tr><td>7′ sofa</td><td class="num">14–16</td><td class="num">$800–$1,800</td></tr>
+      <tr><td>9′ sofa</td><td class="num">16–18</td><td class="num">$1,000–$2,200</td></tr>
+      <tr><td>Settee</td><td class="num">6–8</td><td class="num">$700–$1,000</td></tr>
+      <tr><td>French Provincial</td><td class="num">10–12</td><td class="num">$800–$1,300</td></tr>
+      <tr><td>Loose cushion style</td><td class="num">15–25</td><td class="num">$800–$2,000</td></tr>
+      <tr><td>Tufted back</td><td class="num">16–20</td><td class="num">$1,000–$1,800</td></tr>
+      <tr><td>Camelback / tight back</td><td class="num">11–14</td><td class="num">$1,200–$1,800</td></tr>
+      <tr><td>Semi-attached back</td><td class="num">14–18</td><td class="num">$1,300–$2,000</td></tr>
+      <tr><td>Hide-a-bed sofa</td><td class="num">18–25</td><td class="num">$1,500–$3,000</td></tr>
+      <tr><td>Sectional</td><td class="num">25–35</td><td class="num">$1,500–$4,000</td></tr>
+    </tbody>
+  </table>
+  </div>
 </section>
 
-<!-- FOOTER -->
+<!-- ============ 3 PATTERN MATCHING ============ -->
+<section class="tool" id="pattern" aria-labelledby="pat-h">
+  <h2 id="pat-h"><span class="n">03 ·</span> Pattern matching</h2>
+  <p class="tool-sub">Stripes, plaids, and repeats need more fabric than the plain yardage — every cut has to start at the same point in the repeat. Enter the repeat size and this works out the extra to order and how many repeats run down the piece.</p>
+  <div class="grid2">
+    <div>
+      <label class="flabel" for="pPiece">Piece</label>
+      <select id="pPiece"></select>
+      <label class="flabel" for="pRepeat">Pattern repeat length <span class="hint">Printed on the fabric bolt / listing, in inches</span></label>
+      <select id="pRepeat">
+        <option value="3" data-pct="10">Up to 6 in — small repeat · add ~10%</option>
+        <option value="9" data-pct="15">7–12 in — medium repeat · add ~15%</option>
+        <option value="18" data-pct="25" selected>13–24 in — large repeat · add ~25%</option>
+        <option value="30" data-pct="35">25 in and up — very large repeat · add ~35%</option>
+      </select>
+      <label class="flabel" for="pRailroad">Fabric direction</label>
+      <select id="pRailroad">
+        <option value="1">Up the bolt — standard, matching needed on every panel</option>
+        <option value="0.92">Railroaded — pattern runs across the width, fewer seams to match</option>
+      </select>
+      <label class="check" style="margin-top:16px"><input type="checkbox" id="pCentre" checked><span><b>Centre the pattern on the seat back</b><span>Usual for a feature fabric — the allowance above covers the extra drop per cut</span></span></label>
+    </div>
+    <div>
+      <div class="result" role="status" aria-live="polite">
+        <h3>❯ order with matching</h3>
+        <div class="quote-num"><span id="pResult">16.5</span> <span style="font-size:19px">yards</span></div>
+        <div style="margin-top:12px">
+          <div class="brow"><span>Plain yardage (54 in)</span><span class="v" id="pBase">13 yd</span></div>
+          <div class="brow"><span>Matching allowance</span><span class="v" id="pExtra">+3.3 yd</span></div>
+          <div class="brow"><span>Repeats down the full length</span><span class="v" id="pRepeats">26</span></div>
+        </div>
+        <p class="note" id="pBreakdown" style="color:var(--ink);font-size:14px"></p>
+        <p class="note">Rule behind the math: each panel can waste up to one full repeat where the cut starts. Bigger repeat = more waste per cut. When in doubt, order the extra half yard — a matched seam you can see is a callback waiting to happen. These percentages are ordering allowances, not a guarantee for a specific fabric — check the bolt width and repeat on the actual fabric before you cut.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 PRICE REFERENCE ============ -->
+<section class="tool" id="prices" aria-labelledby="prices-h">
+  <h2 id="prices-h"><span class="n">04 ·</span> Price reference — HomeGuide 2026</h2>
+  <p class="tool-sub">What shops are charging across North America, per piece. Use it to sanity-check your own quote — not to copy blindly. Your rent, your speed, and your city all move your number.</p>
+  <div class="table-scroll">
+  <table id="priceTable">
+    <thead><tr><th>Furniture type</th><th class="num">Low</th><th class="num">High</th><th class="num">Average</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  </div>
+  <p class="note">National average across all pieces: <b style="color:var(--ink)">$850</b> · Typical range: $400–$1,700 · Smallest jobs from $100 · Largest (leather sectionals, antiques) up to $5,000. Source: HomeGuide Furniture Reupholstery Cost Guide, 2026.</p>
+  <h3 style="margin:26px 0 12px;font-size:17px">Reupholster, or tell them to buy new?</h3>
+  <div class="vs">
+    <div class="col">
+      <h3 class="acid">Recommend reupholstering when…</h3>
+      <ul>
+        <li>It's an heirloom, an antique, or has sentimental value</li>
+        <li>The frame is solid, handcrafted wood — built to last</li>
+        <li>The client wants full customisation</li>
+        <li>Your estimate beats new furniture + delivery + assembly</li>
+        <li>It's an expensive piece (e.g. a La-Z-Boy with remote)</li>
+        <li>Fabric or padding is worn, pet-damaged, or holds stains, smoke, or mildew odours</li>
+        <li>The style is dated but the structure is good</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3 style="color:var(--red)">Recommend buying new when…</h3>
+      <ul>
+        <li>The original piece was cheap or low-quality</li>
+        <li>There's no sentimental value</li>
+        <li>The frame is poorly built or structurally damaged</li>
+        <li>The client's budget is limited</li>
+        <li>The piece is the wrong size for their space</li>
+        <li>The client dislikes the style entirely</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 SUPPLIERS ============ -->
+<section class="tool" id="suppliers" aria-labelledby="sup-h">
+  <h2 id="sup-h"><span class="n">05 ·</span> Suppliers directory</h2>
+  <p class="tool-sub">Well-known upholstery suppliers by what they actually sell. Check each supplier's own site for current stock, trade accounts, and shipping — listings here are a starting point, not a stock guarantee.</p>
+  <label class="flabel" for="supSearch">Search suppliers</label>
+  <input type="text" id="supSearch" placeholder="Try: foam, leather, webbing, marine…" autocomplete="off">
+  <div style="height:14px"></div>
+  <div class="chips" role="group" aria-label="Filter by category" id="supChips">
+    <button type="button" class="chip" data-cat="All" aria-pressed="true">All</button>
+    <button type="button" class="chip" data-cat="Fabric" aria-pressed="false">Fabric</button>
+    <button type="button" class="chip" data-cat="Foam &amp; fill" aria-pressed="false">Foam &amp; fill</button>
+    <button type="button" class="chip" data-cat="Tools &amp; hardware" aria-pressed="false">Tools &amp; hardware</button>
+    <button type="button" class="chip" data-cat="Leather" aria-pressed="false">Leather</button>
+    <button type="button" class="chip" data-cat="Marine &amp; outdoor" aria-pressed="false">Marine &amp; outdoor</button>
+  </div>
+  <div class="cards" id="supCards"></div>
+  <p class="note" id="supEmpty" hidden>No supplier matches that search. Try a material — “foam”, “leather”, “webbing” — or clear the filter.</p>
+</section>
+
+<!-- ============ 6 PIPELINE ============ -->
+<section class="tool" id="pipeline" aria-labelledby="pipe-h">
+  <h2 id="pipe-h"><span class="n">06 ·</span> Project pipeline</h2>
+  <p class="tool-sub">Track every job from first inquiry to pickup. Add a project, move it along as the work moves. This list lives in this page while it's open — copy anything you need to keep into your own records.</p>
+  <div class="statgrid" role="status" aria-live="polite">
+    <div class="stat"><div class="k">Inquiry</div><div class="val" id="stInquiry">0</div></div>
+    <div class="stat"><div class="k">Quoted</div><div class="val" id="stQuoted">0</div></div>
+    <div class="stat"><div class="k">In progress</div><div class="val" id="stProgress">0</div></div>
+    <div class="stat"><div class="k">Done</div><div class="val" id="stDone">0</div></div>
+    <div class="stat"><div class="k">Value in progress</div><div class="val" id="stValue">$0</div></div>
+  </div>
+  <div class="grid2">
+    <div>
+      <label class="flabel" for="pjClient">Client name</label>
+      <input type="text" id="pjClient" placeholder="e.g. Sam R.">
+      <label class="flabel" for="pjPiece">Piece</label>
+      <input type="text" id="pjPiece" placeholder="e.g. Wingback chair">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="flabel" for="pjValue">Quote value ($)</label><input type="number" id="pjValue" min="0" step="1" value="0"></div>
+        <div><label class="flabel" for="pjStatus">Stage</label>
+          <select id="pjStatus"><option value="Inquiry">Inquiry</option><option value="Quoted">Quoted</option><option value="In progress">In progress</option><option value="Done">Done</option></select></div>
+      </div>
+      <div class="btnrow"><button class="btn" type="button" id="addProject">+ Add project</button></div>
+      <p class="status" id="pjStatusMsg" aria-live="polite"></p>
+    </div>
+    <div>
+      <span class="flabel">Your projects</span>
+      <div id="projectList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7 INVENTORY ============ -->
+<section class="tool" id="inventory" aria-labelledby="invstock-h">
+  <h2 id="invstock-h"><span class="n">07 ·</span> Fabric inventory</h2>
+  <p class="tool-sub">What's actually on your shelves. Add a fabric when it arrives, remove it when it's used up, and the totals below keep the stock value honest. Anything at 2 yards or less is flagged low.</p>
+  <div class="statgrid" role="status" aria-live="polite">
+    <div class="stat"><div class="k">Fabrics tracked</div><div class="val" id="invCount">0</div></div>
+    <div class="stat"><div class="k">Total yards on hand</div><div class="val" id="invYards">0</div></div>
+    <div class="stat"><div class="k">Stock value</div><div class="val" id="invValue">$0</div></div>
+    <div class="stat"><div class="k">Running low</div><div class="val" id="invLow">0</div></div>
+  </div>
+  <div class="grid2">
+    <div>
+      <label class="flabel" for="fbName">Fabric name</label>
+      <input type="text" id="fbName" placeholder="e.g. Forest velvet — green">
+      <label class="flabel" for="fbType">Type</label>
+      <select id="fbType"><option>Velvet</option><option>Linen</option><option>Cotton / canvas</option><option>Leather / vinyl</option><option>Outdoor / marine</option><option>Foam &amp; fill</option><option>Other</option></select>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="flabel" for="fbYards">Yards on hand</label><input type="number" id="fbYards" min="0" step="0.5" value="0"></div>
+        <div><label class="flabel" for="fbCost">Cost per yard ($)</label><input type="number" id="fbCost" min="0" step="1" value="45"></div>
+      </div>
+      <div class="btnrow"><button class="btn" type="button" id="addFabric">+ Add fabric</button></div>
+      <p class="status" id="fbStatus" aria-live="polite"></p>
+    </div>
+    <div>
+      <span class="flabel">On your shelves</span>
+      <div id="fabricList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8 SCHEDULING ============ -->
+<section class="tool" id="scheduling" aria-labelledby="sched-h">
+  <h2 id="sched-h"><span class="n">08 ·</span> Smart scheduling</h2>
+  <p class="tool-sub">Turn a job's hours into real dates. Enter the work, your bench hours per day, and the promised date — this works out when you'd finish and whether the promise holds.</p>
+  <div class="grid2">
+    <div>
+      <label class="flabel" for="scName">Job name</label>
+      <input type="text" id="scName" placeholder="e.g. Two-cushion couch — Sam R.">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="flabel" for="scHours">Total bench hours</label><input type="number" id="scHours" min="0" step="0.5" value="12"></div>
+        <div><label class="flabel" for="scPerDay">Bench hours per day</label><input type="number" id="scPerDay" min="0.5" step="0.5" value="5"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="flabel" for="scStart">Start date</label><input type="date" id="scStart"></div>
+        <div><label class="flabel" for="scDue">Promised by</label><input type="date" id="scDue"></div>
+      </div>
+      <label class="flabel" for="scDays">Working days per week</label>
+      <select id="scDays"><option value="5" selected>5 — Mon to Fri</option><option value="6">6 — Mon to Sat</option><option value="7">7 — every day</option><option value="4">4</option><option value="3">3</option></select>
+    </div>
+    <div>
+      <div class="result" role="status" aria-live="polite">
+        <h3>❯ the plan</h3>
+        <div class="brow"><span>Working days needed</span><span class="v" id="scDaysOut">—</span></div>
+        <div class="brow"><span>Finish date</span><span class="v" id="scFinish">—</span></div>
+        <div class="brow"><span>Against the promise</span><span class="v" id="scFit">—</span></div>
+        <p class="note" id="scNote" style="color:var(--ink);font-size:14px"></p>
+        <p class="note">Counts only your working days — weekends off unless you said 6 or 7 days. It doesn't know about fabric delivery waits, so add those days to the start date if the material isn't in the shop yet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9 ANALYTICS ============ -->
+<section class="tool" id="analytics" aria-labelledby="ana-h">
+  <h2 id="ana-h"><span class="n">09 ·</span> Shop analytics</h2>
+  <p class="tool-sub">Your numbers, from your numbers. Enter a period — a week, a month, a quarter — and this works out what each job was actually worth and what you really made per bench hour. Nothing is estimated for you; leave a field at 0 and it's left out.</p>
+  <div class="grid2">
+    <div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="flabel" for="anJobs">Jobs completed</label><input type="number" id="anJobs" min="0" step="1" value="0"></div>
+        <div><label class="flabel" for="anRevenue">Revenue ($)</label><input type="number" id="anRevenue" min="0" step="1" value="0"></div>
+        <div><label class="flabel" for="anHours">Bench hours worked</label><input type="number" id="anHours" min="0" step="1" value="0"></div>
+        <div><label class="flabel" for="anFabric">Fabric &amp; materials ($)</label><input type="number" id="anFabric" min="0" step="1" value="0"></div>
+        <div><label class="flabel" for="anCosts">Other costs ($) <span class="hint">Rent share, power, consumables</span></label><input type="number" id="anCosts" min="0" step="1" value="0"></div>
+      </div>
+      <p class="note">Tip: the pipeline above tracks jobs as you add them — <span id="anaPipeNote">no pipeline projects yet.</span></p>
+    </div>
+    <div>
+      <div class="result" role="status" aria-live="polite">
+        <h3>❯ what the period paid</h3>
+        <div class="brow"><span>Average job value</span><span class="v" id="anAvg">—</span></div>
+        <div class="brow"><span>Left after materials &amp; costs</span><span class="v" id="anNet">—</span></div>
+        <div class="brow"><span>Per bench hour (after costs)</span><span class="v" id="anHourly">—</span></div>
+        <div class="brow"><span>Materials share of revenue</span><span class="v" id="anMatPct">—</span></div>
+        <p class="note" id="anNote" style="color:var(--ink);font-size:14px">Enter at least jobs and revenue to see the breakdown.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10 INVOICE ============ -->
+<section class="tool" id="invoice" aria-labelledby="inv-h">
+  <h2 id="inv-h"><span class="n">10 ·</span> Invoice builder</h2>
+  <p class="tool-sub">Fill in your shop and the job. The invoice on the right updates as you type. When it's right, copy it or download it and send it your usual way — nothing is saved or sent from this page.</p>
+  <div class="grid2">
+    <div>
+      <label class="flabel" for="shopName">Your shop name</label>
+      <input type="text" id="shopName" placeholder="e.g. Maple Street Upholstery" autocomplete="organization">
+      <label class="flabel" for="shopContact">Your contact <span class="hint">Email or phone, shown on the invoice</span></label>
+      <input type="text" id="shopContact" placeholder="e.g. hello@yourshop.ca">
+      <label class="flabel" for="clientName">Client name</label>
+      <input type="text" id="clientName" placeholder="Client's full name" autocomplete="name">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="flabel" for="invNum">Invoice #</label><input type="text" id="invNum" value="INV-001"></div>
+        <div><label class="flabel" for="invDate">Date</label><input type="date" id="invDate"></div>
+      </div>
+      <span class="flabel">Line items</span>
+      <div id="lineItems"></div>
+      <button class="btn secondary" type="button" id="addLine">+ Add a line</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label class="flabel" for="taxRate">Tax % <span class="hint">Ontario HST is 13</span></label><input type="number" id="taxRate" value="13" min="0" max="30" step="0.1"></div>
+        <div><label class="flabel" for="depositPaid">Deposit already paid ($)</label><input type="number" id="depositPaid" value="0" min="0" step="1"></div>
+      </div>
+      <label class="flabel" for="invNotes">Notes <span class="hint">Payment terms, fabric details, timeline</span></label>
+      <textarea id="invNotes" placeholder="e.g. Balance due on pickup. Fabric: client-supplied linen. Estimated completion: 3 weeks."></textarea>
+      <div class="btnrow">
+        <button class="btn" type="button" id="copyInvoice">Copy invoice text</button>
+        <button class="btn secondary" type="button" id="dlInvoice">Download invoice (.txt)</button>
+      </div>
+      <p class="status" id="invStatus" aria-live="polite"></p>
+    </div>
+    <div>
+      <div class="invoice-paper" id="invoicePaper" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
 <footer>
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <span class="arr">❯</span> y<span class="cur"></span>
-      &nbsp;·&nbsp;
-      <span class="rest">--force ./stitchdesk &nbsp;·&nbsp; bedroom-built · neurodivergent-first</span>
-    </div>
-    <ul class="footer-links">
-      <li><a href="#">privacy</a></li>
-      <li><a href="#">terms</a></li>
-      <li><a href="#">support</a></li>
-    </ul>
-    <div class="footer-copy">© 2025 StitchDesk // CreativeFactory.studio</div>
-  </div>
+  <p><b style="color:var(--ink)">❯ y_ · StitchDesk Toolkit</b> — by --force ./buildyou, Creative Factory Studio. <span class="copper">$ rm -rf doubt</span></p>
+  <p><b style="color:var(--ink)">$20/month</b> after a 14-day free trial (no credit card for the trial). The trial is local to your browser only — not an account, no server check. Pay by Telegram Stars or Interac e-transfer to forcebuildyou@gmail.com. No Stripe.</p>
+  <p>Pricing data: HomeGuide Furniture Reupholstery Cost Guide 2026, as compiled in the StitchDesk quote reference guide. Fabric $30–$60/yard and labour $50–$100/hour are national averages — always price your own shop's costs. Quotes from this page are estimates, not contracts.</p>
+  <p>Finishes that commonly add to a base quote: welting / piping, tufting, skirts, and decorative nail heads. Extras that commonly add: pattern matching, white fabric, leather, furniture transport, in-home service, restuffing, and extra throw pillows.</p>
 </footer>
-
-<!-- MODAL -->
-<div class="overlay" id="modal">
-  <div class="modal">
-    <div class="modal-top">
-      <div class="modal-mark"><span class="arr">❯</span> y<span class="cur"></span><span class="lbl">· setup.init()</span></div>
-      <button class="modal-x" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="mstep active" id="s1">
-        <div class="step-label">// 01 of 03 — business details</div>
-        <h3>Set up your receptionist</h3>
-        <p>Tell us about your upholstery business.</p>
-        <div class="fields">
-          <div class="field"><label>Business Name</label><input type="text" id="bizName" placeholder="e.g. Ace Upholstery Co."/></div>
-          <div class="field"><label>Your Name</label><input type="text" id="ownerName" placeholder="First name"/></div>
-          <div class="field"><label>Phone Number</label><input type="tel" id="phone" placeholder="+1 (555) 000-0000"/></div>
-          <div class="field"><label>Email</label><input type="email" id="email" placeholder="you@yourbusiness.com"/></div>
-          <div class="field"><label>City / Region</label><input type="text" id="city" placeholder="e.g. Toronto, ON"/></div>
-        </div>
-        <div class="mnav">
-          <span></span>
-          <div style="display:flex;align-items:center;gap:12px">
-            <div class="dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
-            <button class="btn-primary" style="font-size:.7rem;padding:.7rem 1.3rem" onclick="go(2)">Continue →</button>
-          </div>
-        </div>
-      </div>
-      <div class="mstep" id="s2">
-        <div class="step-label">// 02 of 03 — specialties</div>
-        <h3>What do you specialise in?</h3>
-        <p>Your AI receptionist will mention these to customers.</p>
-        <div class="spec-grid">
-          <button class="spec" onclick="this.classList.toggle('on')">🛋 Furniture</button>
-          <button class="spec" onclick="this.classList.toggle('on')">🚗 Auto</button>
-          <button class="spec" onclick="this.classList.toggle('on')">⛵ Marine</button>
-          <button class="spec" onclick="this.classList.toggle('on')">🪑 Cushions</button>
-          <button class="spec" onclick="this.classList.toggle('on')">🛏 Headboards</button>
-          <button class="spec" onclick="this.classList.toggle('on')">🏢 Commercial</button>
-        </div>
-        <div class="field" style="margin-bottom:1.4rem"><label>Anything else?</label><textarea id="notes" placeholder="e.g. vintage restoration, boat interiors..."></textarea></div>
-        <div class="mnav">
-          <button class="btn-back" onclick="go(1)">← back</button>
-          <div style="display:flex;align-items:center;gap:12px">
-            <div class="dots"><div class="dot done"></div><div class="dot active"></div><div class="dot"></div></div>
-            <button class="btn-primary" style="font-size:.7rem;padding:.7rem 1.3rem" onclick="go(3)">Continue →</button>
-          </div>
-        </div>
-      </div>
-      <div class="mstep" id="s3">
-        <div class="step-label" id="s3tag">// 03 of 03 — activate</div>
-        <h3 id="s3h">Start your free trial</h3>
-        <p id="s3p">No charge for 7 days. Cancel anytime.</p>
-        <div class="plan-box"><span>StitchDesk <strong id="planName">Pro</strong></span><span id="planAmt">$29/mo after trial</span></div>
-        <button class="btn-plan btn-pro" id="activateBtn" onclick="go(4)">❯ Activate Free Trial</button>
-        <div class="trust">🔒 No card needed today — we set up your line personally after signup</div>
-        <div class="mnav" style="margin-top:1.2rem">
-          <button class="btn-back" onclick="go(2)">← back</button>
-          <div class="dots"><div class="dot done"></div><div class="dot done"></div><div class="dot active"></div></div>
-        </div>
-      </div>
-      <div class="mstep" id="s4">
-        <div class="success">
-          <div class="success-tag">✓ receptionist.active</div>
-          <h3>You're all set!</h3>
-          <p>Thanks — we've got your details. We're setting up your receptionist now; you'll get a text within 2 hours to finish activation.</p>
-          <div class="meta">Business <span class="v" id="rBiz">—</span></div>
-          <div class="meta">Plan <span class="v" id="rPlan">—</span></div>
-          <div class="meta">Phone <span class="v" id="rPhone">—</span></div>
-          <div class="meta">Status <span class="v">✓ Active</span></div>
-          <button class="btn-primary" style="margin-top:1.4rem;width:100%;font-size:.75rem" onclick="closeModal()">Done</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- DELLA — inlined pixel mascot, no external file needed -->
-<div id="della-widget">
-  <div id="della-wrap">
-    <div id="della-bub"></div>
-    <canvas id="della-c"></canvas>
-  </div>
 </div>
 
 <script>
-/* ── MODAL ── */
-var plan='pro';
-function openModal(p){
-  plan=p;
-  var pro=p==='pro';
-  document.getElementById('planName').textContent=pro?'Pro':'Free';
-  document.getElementById('planAmt').textContent=pro?'$29/mo after trial':'$0 / forever';
-  document.getElementById('activateBtn').textContent=pro?'❯ Activate Free Trial':'❯ Activate Free Account';
-  document.getElementById('s3h').textContent=pro?'Start your free trial':'Activate your free account';
-  document.getElementById('s3p').textContent=pro?'No charge for 7 days. Cancel anytime.':'No credit card needed. Get started instantly.';
-  go(1);
-  document.getElementById('modal').classList.add('open');
-}
-function closeModal(){document.getElementById('modal').classList.remove('open')}
-document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
-function go(n){
-  document.querySelectorAll('.mstep').forEach(function(s){s.classList.remove('active')});
-  document.getElementById('s'+n).classList.add('active');
-  if(n===4){
-    try{
-      var specs=[];document.querySelectorAll('.spec.on').forEach(function(b){specs.push(b.textContent.trim())});
-      fetch('https://formsubmit.co/ajax/forcebuildyou@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'New StitchDesk trial signup',_template:'table',Plan:'StitchDesk '+(plan==='pro'?'Pro':'Free'),Business:document.getElementById('bizName').value,Name:document.getElementById('ownerName').value,Phone:document.getElementById('phone').value,Email:document.getElementById('email').value,City:document.getElementById('city').value,Specialties:specs.join(', '),Notes:document.getElementById('notes').value})}).catch(function(){});
-    }catch(e){}
-    document.getElementById('rBiz').textContent=document.getElementById('bizName').value||'—';
-    document.getElementById('rPlan').textContent='StitchDesk '+(plan==='pro'?'Pro':'Free');
-    document.getElementById('rPhone').textContent=document.getElementById('phone').value||'—';
-  }
-}
-
-/* ── DELLA MASCOT ── */
+// ---------- Trial gate (local, browser-only — not an account, no server check) ----------
 (function(){
-  var COL={_:null,R:'#f21428',r:'#8c0a18',S:'#fdd9b5',E:'#1a1028',W:'#ffffff',p:'#ff9898',m:'#cc4040',K:'#ff79c6',k:'#c0448c',N:'#5a6aaa',n:'#3a4878',L:'#fdd9b5',B:'#181828',A:'#fdd9b5',G:'#c8ff00'};
-  var F0=['___RRRRRRRR___','__RRRrrrrRR___','___RSSSSSSR___','____SSSSSS____','____SEESEE____','____SGWSGW____','____SSSSSS____','____SpSSpS____','____SSmmSS____','____SSSSSS____','____SKKKKS____','___KKKKKKK____','A__KKKKKK_____','A__KKKKKKK____','___KKKKKKK____','___NNNNNNN____','__NNNNNNNNN___','__nNNNNNNNn___','____LL__LL____','____LL__LL____','___BBB__BBB___','___BBB__BBB___'];
-  var F1=['A___RRRRRRRR__','_A__RRRrrrrRR_','__A_RSSSSSSR__','____SSSSSS____','____SEESEE____','____SGWSGW____','____SSSSSS____','____SpSSpS____','____SSmmSS____','____SSSSSS____','____SKKKKS____','___KKKKKKK____','___KKKKKK_____','___KKKKKKK____','___KKKKKKK____','___NNNNNNN____','__NNNNNNNNN___','__nNNNNNNNn___','____LL__LL____','____LL__LL____','___BBB__BBB___','___BBB__BBB___'];
-  var WAVE=F0.map(function(r,i){if(i===0)return 'G__RRRRRRRR___';if(i===1)return 'G__RRRrrrrRR__';if(i===2)return 'G__RSSSSSSR__';return r;});
-  var blink=function(f){return f.map(function(r,i){return(i===4||i===5)?'____SSSSSS____':r;});};
-  var PX=4,W=14,H=22;
-  var cv=document.getElementById('della-c');
-  cv.width=W*PX;cv.height=H*PX;
-  var ctx=cv.getContext('2d');
-  var frame=0,isBlinking=false,isWaving=false,t=0;
-  var MSGS=['rm -rf doubt','❯ y_','build mode','you got this!','shipit ✦','(˶ᵔᵕᵔ˶)','let\'s go~','--force ./buildyou'];
-  var msgIdx=0;
-  var bub=document.getElementById('della-bub');
-  function draw(){
-    var rows=isWaving?WAVE:(isBlinking?blink(frame?F1:F0):(frame?F1:F0));
-    ctx.clearRect(0,0,cv.width,cv.height);
-    var by=Math.sin(t*0.04)*1.2;
-    ctx.save();ctx.translate(0,by);
-    rows.forEach(function(row,ri){row.split('').forEach(function(ch,ci){if(COL[ch]){ctx.fillStyle=COL[ch];ctx.fillRect(ci*PX,ri*PX,PX,PX);}});});
-    ctx.restore();
+  var KEY = 'stitchdesk_trial_v1', DAY = 86400000, TRIAL_DAYS = 14, PAID_DAYS = 30;
+  function $(id){ return document.getElementById(id); }
+  function load(){ try{ var raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; } }
+  function save(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
+  function clearData(){ try{ localStorage.removeItem(KEY); }catch(e){} }
+  function fmt(d){ return new Date(d).toLocaleDateString('en-CA', {weekday:'short', year:'numeric', month:'short', day:'numeric'}); }
+
+  // Wrap the tool nav + all 10 tool sections so they can be locked as one block.
+  var pageWrap = document.querySelector('.wrap');
+  var nav = document.querySelector('.toolnav');
+  var tools = Array.prototype.slice.call(document.querySelectorAll('section.tool'));
+  var lockWrap = document.createElement('div');
+  lockWrap.className = 'lockwrap'; lockWrap.id = 'toolsWrap';
+  if(nav && tools.length && pageWrap){
+    pageWrap.insertBefore(lockWrap, nav);
+    lockWrap.appendChild(nav);
+    tools.forEach(function(s){ lockWrap.appendChild(s); });
   }
-  function tick(){
-    t++;
-    if(t%30===0&&!isWaving)frame=1-frame;
-    if(t%210===0){isBlinking=true;setTimeout(function(){isBlinking=false;},130);}
-    if(t%350===0){setTimeout(function(){isBlinking=true;setTimeout(function(){isBlinking=false;},130);},250);}
-    draw();requestAnimationFrame(tick);
+  var banner = document.createElement('div');
+  banner.className = 'lockbanner'; banner.id = 'lockBanner'; banner.hidden = true;
+  banner.innerHTML = '<h2>❯ Tools are locked</h2>'
+    + '<p id="lockBannerText"><b>Start the free 14-day trial above</b> to unlock all 10 tools — name, business name, and email, no credit card. The trial is stored only in this browser.</p>'
+    + '<div class="btnrow"><a class="btn" href="#trial">Go to the trial sign-up ↑</a></div>';
+  lockWrap.insertBefore(banner, lockWrap.firstChild);
+
+  function getState(){
+    var s = load(), now = Date.now();
+    if(s && s.paidUntil && s.paidUntil > now) return {kind:'paid', s:s, until:s.paidUntil, days:Math.ceil((s.paidUntil - now) / DAY)};
+    if(s && s.start){
+      var end = s.start + TRIAL_DAYS * DAY;
+      if(end > now) return {kind:'active', s:s, end:end, days:Math.ceil((end - now) / DAY)};
+      return {kind:'expired', s:s, end:end};
+    }
+    return {kind:'none', s:null};
   }
-  function showBubble(msg){
-    bub.textContent=msg||MSGS[msgIdx++%MSGS.length];
-    bub.classList.add('on');
-    isWaving=true;
-    setTimeout(function(){isWaving=false;},700);
-    setTimeout(function(){bub.classList.remove('on');},2500);
+
+  function render(){
+    var st = getState();
+    var locked = (st.kind === 'none' || st.kind === 'expired');
+    $('gateStart').hidden = st.kind !== 'none';
+    $('gateActive').hidden = st.kind !== 'active';
+    $('gateExpired').hidden = st.kind !== 'expired';
+    $('gatePaid').hidden = st.kind !== 'paid';
+    $('resetRow').hidden = !st.s;
+    var line = $('trialStateLine');
+    if(st.kind === 'none') line.innerHTML = 'Status: <b>no trial started in this browser</b> — the tools below are locked. Start the free trial to unlock them for 14 days.';
+    if(st.kind === 'active'){
+      line.innerHTML = 'Status: <b>trial running — ' + st.days + ' day' + (st.days === 1 ? '' : 's') + ' left</b>, ends ' + fmt(st.end) + '. All 10 tools are unlocked below.';
+      $('daysLeftNum').textContent = st.days;
+      $('trialEndDate').textContent = fmt(st.end);
+      $('trialBarFill').style.width = Math.max(2, Math.round(st.days / TRIAL_DAYS * 100)) + '%';
+      $('trialWho').textContent = 'Trial for ' + (st.s.name || '') + ' · ' + (st.s.business || '') + ' (' + (st.s.email || '') + ') — as saved in this browser.';
+    }
+    if(st.kind === 'expired'){
+      line.innerHTML = 'Status: <b>trial ended ' + fmt(st.end) + '</b> — the tools below are locked. Pay $20 CAD for the month, then unlock below.';
+      $('expiredWhen').textContent = fmt(st.end);
+      if(st.s.business) $('expiredBiz').textContent = st.s.business;
+      $('lockBannerText').innerHTML = '<b>Your 14-day trial has ended.</b> The tools unlock again for 30 days once the $20 month is paid by Telegram Stars or Interac e-transfer to <b>forcebuildyou@gmail.com</b> — pay and unlock in the section above.';
+    }
+    if(st.kind === 'paid'){
+      line.innerHTML = 'Status: <b>paid access — ' + st.days + ' day' + (st.days === 1 ? '' : 's') + ' left</b>, until ' + fmt(st.until) + '. All 10 tools are unlocked below.';
+      $('paidDaysNum').textContent = st.days;
+      $('paidUntilDate').textContent = fmt(st.until);
+    }
+    lockWrap.classList.toggle('is-locked', locked);
+    banner.hidden = !locked;
+    var lockables = [nav].concat(tools);
+    lockables.forEach(function(el){ if(!el) return; if(locked){ el.setAttribute('inert', ''); } else { el.removeAttribute('inert'); } });
   }
-  setTimeout(function(){showBubble();},1500);
-  setInterval(function(){showBubble();},7000);
-  cv.addEventListener('click',function(){showBubble(MSGS[Math.floor(Math.random()*MSGS.length)]);});
-  tick();
+
+  $('startTrialBtn').addEventListener('click', function(){
+    var name = $('tName').value.trim(), biz = $('tBiz').value.trim(), email = $('tEmail').value.trim();
+    var status = $('startTrialStatus');
+    if(!name || !biz || !email){ status.textContent = 'Fill in all three: your name, your business name, and your email.'; return; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ status.textContent = 'That email doesn’t look complete — check it and try again.'; return; }
+    save({name:name, business:biz, email:email, start:Date.now(), paidUntil:0});
+    status.textContent = '';
+    render();
+    document.getElementById('calculator').scrollIntoView({behavior:'smooth'});
+  });
+
+  var copyBtn2 = $('copyPayEmail2');
+  if(copyBtn2) copyBtn2.addEventListener('click', function(){
+    var done = function(){ $('payStatus2').textContent = 'Copied: forcebuildyou@gmail.com — use it for your $20 e-transfer.'; };
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText('forcebuildyou@gmail.com').then(done, done); } else { done(); }
+  });
+
+  document.querySelectorAll('.paid-unlock-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var status = document.querySelector('.paid-unlock-status');
+      if(btn.getAttribute('data-armed') !== '1'){
+        btn.setAttribute('data-armed', '1');
+        btn.textContent = 'Tap again to confirm you’ve sent the $20';
+        if(status) status.textContent = 'One more tap confirms you’ve paid and unlocks the tools in this browser for 30 days.';
+        return;
+      }
+      var s = load() || {};
+      s.paidUntil = Date.now() + PAID_DAYS * DAY;
+      if(!s.start) s.start = Date.now() - TRIAL_DAYS * DAY; // direct payer who never trialled
+      save(s);
+      btn.removeAttribute('data-armed');
+      btn.textContent = 'I’ve sent the $20 — unlock for 30 days →';
+      render();
+      document.getElementById('calculator').scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+  $('resetTrialBtn').addEventListener('click', function(){
+    clearData();
+    $('tName').value = ''; $('tBiz').value = ''; $('tEmail').value = '';
+    render();
+    $('resetStatus').textContent = 'Cleared. The trial data saved in this browser is gone and the tools are locked again.';
+    document.getElementById('trial').scrollIntoView({behavior:'smooth'});
+  });
+
+  render();
 })();
+</script>
+<script>
+// ---------- Data: HomeGuide 2026 ----------
+var FURNITURE = [
+  {id:'couch2',  name:'Two-cushion couch',        low:600,  high:1500, avg:1050, yards:13, hours:12},
+  {id:'sectional',name:'Large sectional sofa',    low:1500, high:4000, avg:2750, yards:30, hours:34},
+  {id:'loveseat', name:'Loveseat',                low:600,  high:1600, avg:1100, yards:10, hours:13},
+  {id:'chaise',   name:'Chaise lounge',           low:700,  high:1500, avg:1100, yards:9,  hours:12},
+  {id:'wingback', name:'Wingback chair',          low:600,  high:1500, avg:1050, yards:7,  hours:11},
+  {id:'recliner', name:'Recliner',                low:600,  high:2000, avg:1300, yards:8,  hours:14},
+  {id:'dining',   name:'Dining room chair',       low:150,  high:600,  avg:375,  yards:2,  hours:4},
+  {id:'sidechair',name:'Side chair / slip seat',  low:100,  high:250,  avg:175,  yards:1,  hours:2},
+  {id:'barstool', name:'Bar stool',               low:60,   high:250,  avg:155,  yards:1,  hours:2},
+  {id:'ottoman',  name:'Ottoman',                 low:300,  high:1000, avg:650,  yards:3,  hours:5},
+  {id:'headboard',name:'Headboard',               low:200,  high:1000, avg:600,  yards:4,  hours:6},
+  {id:'bed',      name:'Bed (upholstered)',       low:350,  high:800,  avg:575,  yards:6,  hours:8},
+  {id:'leatherchair',name:'Leather chair',       low:800,  high:2000, avg:1400, yards:7,  hours:13},
+  {id:'leathercouch',name:'Leather couch',       low:1200, high:5000, avg:3100, yards:14, hours:22},
+  {id:'cushion',  name:'Sofa cushion (each)',     low:70,   high:200,  avg:135,  yards:1.5,hours:1.5},
+  {id:'restuff',  name:'Restuffing cushion (each)',low:100, high:200,  avg:150,  yards:0,  hours:1.5},
+  {id:'outdoor',  name:'Outdoor cushion (each)',  low:80,   high:300,  avg:190,  yards:1.5,hours:2},
+  {id:'carseat',  name:'Car seat (per seat)',     low:200,  high:750,  avg:475,  yards:3,  hours:6},
+  {id:'slipcover',name:'Custom slipcover (per seat)',low:200,high:1000,avg:600,  yards:5,  hours:7}
+];
+var SUPPLIERS = [
+  {name:'Sailrite', cat:'Marine & outdoor', sells:'Marine vinyl, outdoor fabric, foam, thread, zippers, and upholstery tools — with detailed how-to guides.', best:'Boat, patio, and outdoor jobs; shops that want supplies and instructions in one place.'},
+  {name:'Rochford Supply', cat:'Tools & hardware', sells:'Wholesale upholstery supplies: webbing, springs, tack strips, staples, foam, and tools.', best:'Stocking the shop basics in bulk at trade pricing.'},
+  {name:'DIY Upholstery Supply', cat:'Tools & hardware', sells:'Upholstery tools and materials — webbing stretchers, staple removers, springs, clips, and kits.', best:'Small shops and one-person benches ordering tools and small quantities.'},
+  {name:'The Foam Factory', cat:'Foam & fill', sells:'Foam cut to size, cushion foam, batting, and fibre fill.', best:'Cushion restuffing jobs where you need an exact cut without buying a full slab.'},
+  {name:'Albany Foam & Supply', cat:'Foam & fill', sells:'Upholstery foam, Dacron batting, and shop supplies for the trade.', best:'Regular foam and batting orders for a working shop.'},
+  {name:'Mood Fabrics', cat:'Fabric', sells:'Designer and apparel/upholstery-weight fabrics, including wools, linens, and velvets.', best:'One-off statement pieces and clients who want a fabric they can see and feel first.'},
+  {name:'Fabric Wholesale Direct', cat:'Fabric', sells:'Bulk fabric by the yard and roll — canvas, vinyl, outdoor, and upholstery weights.', best:'High-volume basics where price per yard matters most.'},
+  {name:'Tandy Leather', cat:'Leather', sells:'Leather hides, leather tools, dyes, and hardware, with retail locations.', best:'Leather repairs and small leather jobs; seeing hides in person before buying.'},
+  {name:'Springfield Leather Co.', cat:'Leather', sells:'Leather hides, remnants, tools, and hardware by mail order.', best:'Ordering specific hide weights for furniture and auto work.'},
+  {name:'Truper', cat:'Tools & hardware', sells:'Hand tools — hammers, pliers, staple guns, cutters — sold through hardware distributors.', best:'Durable bench basics without specialty-shop pricing.'}
+];
+function money(n){ return '$' + Math.round(n).toLocaleString('en-CA'); }
+function $(id){ return document.getElementById(id); }
+function esc(s){ var d=document.createElement('div'); d.textContent=s==null?'':String(s); return d.innerHTML; }
+function copyText(txt, statusEl, okMsg){
+  function done(){ if(statusEl) statusEl.textContent = okMsg; }
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, function(){ fallback(); }); } else fallback();
+  function fallback(){ var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){ if(statusEl) statusEl.textContent='Copy failed — select the text manually.'; } ta.remove(); }
+}
+$('copyPayEmail').addEventListener('click', function(){ copyText('forcebuildyou@gmail.com', $('payStatus'), 'Copied: forcebuildyou@gmail.com — use it for your $20 e-transfer.'); });
+
+// ---------- Populate selects & price table ----------
+var furnSel = $('furnType'), ySel = $('yPiece'), pSel = $('pPiece');
+FURNITURE.forEach(function(f){
+  [['furnType'],['yPiece'],['pPiece']].forEach(function(){});
+  var o1=document.createElement('option'); o1.value=f.id; o1.textContent=f.name; furnSel.appendChild(o1);
+  var o2=document.createElement('option'); o2.value=f.id; o2.textContent=f.name; ySel.appendChild(o2);
+  var o3=document.createElement('option'); o3.value=f.id; o3.textContent=f.name; pSel.appendChild(o3);
+});
+var ptBody = document.querySelector('#priceTable tbody');
+FURNITURE.forEach(function(f){
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td>'+esc(f.name)+'</td><td class="num">'+money(f.low)+'</td><td class="num">'+money(f.high)+'</td><td class="num">'+money(f.avg)+'</td>';
+  ptBody.appendChild(tr);
+});
+function furnById(id){ for(var i=0;i<FURNITURE.length;i++) if(FURNITURE[i].id===id) return FURNITURE[i]; return FURNITURE[0]; }
+
+// ---------- Quote calculator ----------
+var lastQuote = {total:0, name:'', fabric:0, labor:0, extras:0};
+function calcQuote(){
+  var f = furnById(furnSel.value);
+  var yards = parseFloat($('yards').value)||0;
+  var fp = parseFloat($('fabricPrice').value)||0;
+  var hours = parseFloat($('hours').value)||0;
+  var lr = parseFloat($('laborRate').value)||0;
+  $('fabricPriceVal').textContent = '$'+fp+' / yard';
+  $('laborRateVal').textContent = '$'+lr+' / hour';
+  var fabric = yards*fp, labor = hours*lr, base = fabric+labor;
+  var extras = 0, extraNames = [];
+  document.querySelectorAll('.extra-pct:checked').forEach(function(c){ extras += base*(parseFloat(c.value)/100); extraNames.push(c.getAttribute('data-name')); });
+  document.querySelectorAll('.extra-flat:checked').forEach(function(c){ extras += parseFloat(c.value); extraNames.push(c.getAttribute('data-name')); });
+  var total = base + extras;
+  lastQuote = {total:total, name:f.name, fabric:fabric, labor:labor, extras:extras, extraNames:extraNames, yards:yards};
+  $('bFabric').textContent = money(fabric)+'  ('+yards+' yd)';
+  $('bLabor').textContent = money(labor)+'  ('+hours+' hrs)';
+  $('bExtras').textContent = money(extras);
+  $('quoteTotal').textContent = money(total);
+  $('bDeposit').textContent = money(total/2);
+  $('rbLow').textContent = money(f.low); $('rbHigh').textContent = money(f.high); $('rbAvg').textContent = money(f.avg);
+  var span = Math.max(f.high*1.25, total*1.1, 1);
+  $('rbFill').style.left = (f.low/span*100)+'%'; $('rbFill').style.width = ((f.high-f.low)/span*100)+'%';
+  $('rbMarker').style.left = 'calc('+(Math.min(total/span,1)*100)+'% - 2px)';
+  var note;
+  if(total < f.low) note = 'Your quote is below the HomeGuide low for this piece ('+money(f.low)+'). Double-check your hours — underpricing is the fastest way to burn out.';
+  else if(total > f.high) note = 'Your quote is above the HomeGuide high for this piece ('+money(f.high)+'). That can be right for leather, antiques, or rush work — just be ready to explain it.';
+  else note = 'Your quote sits inside the HomeGuide 2026 range for this piece. Average is '+money(f.avg)+'.';
+  $('rbNote').textContent = note;
+}
+furnSel.addEventListener('change', function(){ var f=furnById(furnSel.value); $('yards').value=f.yards; $('hours').value=f.hours; calcQuote(); });
+['yards','fabricPrice','hours','laborRate'].forEach(function(id){ $(id).addEventListener('input', calcQuote); });
+document.querySelectorAll('.extra-pct,.extra-flat').forEach(function(c){ c.addEventListener('change', calcQuote); });
+calcQuote();
+$('copyQuote').addEventListener('click', function(){
+  var txt = 'Quote — '+lastQuote.name+'\nFabric: '+money(lastQuote.fabric)+' ('+lastQuote.yards+' yards)\nLabour: '+money(lastQuote.labor)+'\nExtras: '+money(lastQuote.extras)+(lastQuote.extraNames.length?' ('+lastQuote.extraNames.join(', ')+')':'')+'\nTotal estimate: '+money(lastQuote.total)+'\nDeposit to book (50%): '+money(lastQuote.total/2)+'\nEstimate based on HomeGuide 2026 pricing. Final price confirmed after inspection.';
+  copyText(txt, $('quoteStatus'), 'Quote copied — paste it into a message or email.');
+});
+$('sendToInvoice').addEventListener('click', function(){
+  setLine(0, 'Reupholstery — '+lastQuote.name, 1, Math.round(lastQuote.total));
+  renderInvoice();
+  $('quoteStatus').textContent = 'Sent to the invoice builder below as line 1.';
+  document.getElementById('invoice').scrollIntoView({behavior:'smooth'});
+});
+
+// ---------- Yardage ----------
+function calcYardage(){
+  var f = furnById(ySel.value);
+  var base = f.yards;
+  var w = parseFloat($('yWidth').value), p = parseFloat($('yPattern').value);
+  var total = base*w*p;
+  var wasteNote = 'Base '+base+' yards (54-inch, plain).';
+  if($('yWaste').checked){ total = total*1.1; wasteNote += ' Includes 10% cutting waste.'; }
+  var rounded = Math.ceil(total*2)/2;
+  $('yResult').textContent = rounded.toFixed(1).replace('.0','');
+  $('yBreakdown').textContent = f.name+': '+wasteNote+' With your width and pattern choices: '+total.toFixed(1)+' yards → order '+rounded.toFixed(1).replace('.0','')+' yards.';
+}
+['yPiece','yWidth','yPattern','yWaste'].forEach(function(id){ $(id).addEventListener('change', calcYardage); $(id).addEventListener('input', calcYardage); });
+calcYardage();
+
+// ---------- Pattern matching ----------
+function calcPattern(){
+  var f = furnById(pSel.value);
+  var opt = $('pRepeat').options[$('pRepeat').selectedIndex];
+  var repeatIn = parseFloat(opt.value), pct = parseFloat(opt.getAttribute('data-pct'));
+  var dir = parseFloat($('pRailroad').value);
+  var totalRaw = f.yards * (1 + pct/100) * dir;
+  var rounded = Math.ceil(totalRaw*2)/2;
+  var repeats = Math.round((f.yards*36) / repeatIn);
+  $('pResult').textContent = rounded.toFixed(1).replace('.0','');
+  $('pBase').textContent = f.yards+' yd';
+  $('pExtra').textContent = '+'+(Math.max(rounded - f.yards,0)).toFixed(1).replace('.0','')+' yd';
+  $('pRepeats').textContent = repeats;
+  $('pBreakdown').textContent = f.name+' in a '+repeatIn+'-inch representative repeat: plain yardage '+f.yards+' yd, plus about '+pct+'% for matching'+(dir<1?' (railroaded, so a little less)':'')+' → order '+rounded.toFixed(1).replace('.0','')+' yards. About '+repeats+' repeats run down the full length of fabric.';
+}
+['pPiece','pRepeat','pRailroad','pCentre'].forEach(function(id){ $(id).addEventListener('change', calcPattern); });
+calcPattern();
+
+// ---------- Suppliers ----------
+var supCat = 'All';
+function renderSuppliers(){
+  var q = ($('supSearch').value||'').toLowerCase().trim();
+  var box = $('supCards'); box.innerHTML=''; var shown=0;
+  SUPPLIERS.forEach(function(s){
+    if(supCat!=='All' && s.cat!==supCat) return;
+    var hay = (s.name+' '+s.cat+' '+s.sells+' '+s.best).toLowerCase();
+    if(q && hay.indexOf(q)===-1) return;
+    shown++;
+    var d=document.createElement('div'); d.className='scard';
+    d.innerHTML='<h3></h3><span class="cat"></span><p class="sells"></p><p class="best"></p>';
+    d.querySelector('h3').textContent=s.name;
+    d.querySelector('.cat').textContent=s.cat;
+    d.querySelector('.sells').textContent=s.sells;
+    d.querySelector('.best').textContent='Best for: '+s.best;
+    box.appendChild(d);
+  });
+  $('supEmpty').hidden = shown>0;
+}
+$('supSearch').addEventListener('input', renderSuppliers);
+document.querySelectorAll('#supChips .chip').forEach(function(ch){
+  ch.addEventListener('click', function(){
+    document.querySelectorAll('#supChips .chip').forEach(function(c){ c.setAttribute('aria-pressed','false'); });
+    ch.setAttribute('aria-pressed','true'); supCat = ch.getAttribute('data-cat'); renderSuppliers();
+  });
+});
+renderSuppliers();
+
+// ---------- Pipeline ----------
+var STAGES = ['Inquiry','Quoted','In progress','Done'];
+var projects = [];
+function renderProjects(){
+  var list = $('projectList'); list.innerHTML='';
+  var counts = {'Inquiry':0,'Quoted':0,'In progress':0,'Done':0}; var inProgValue = 0;
+  projects.forEach(function(p){ counts[p.status]++; if(p.status==='In progress') inProgValue += p.value; });
+  $('stInquiry').textContent = counts['Inquiry']; $('stQuoted').textContent = counts['Quoted'];
+  $('stProgress').textContent = counts['In progress']; $('stDone').textContent = counts['Done'];
+  $('stValue').textContent = money(inProgValue);
+  $('anaPipeNote').textContent = projects.length ? ('pipeline right now: '+projects.length+' project'+(projects.length===1?'':'s')+', '+counts['Done']+' done, '+money(projects.reduce(function(a,p){return a+(p.status==='Done'?p.value:0);},0))+' in completed quote value.') : 'no pipeline projects yet.';
+  if(!projects.length){ list.innerHTML = '<div class="empty">No projects yet.<br>Add your first one on the left.</div>'; return; }
+  projects.forEach(function(p, idx){
+    var d = document.createElement('div'); d.className='proj';
+    var stageIdx = STAGES.indexOf(p.status);
+    d.innerHTML = '<div><b></b><div class="meta"></div></div><div class="proj-actions" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="badge'+(p.status==='Done'?' done':'')+'"></span></div>';
+    d.querySelector('b').textContent = p.piece || 'Untitled piece';
+    d.querySelector('.meta').textContent = (p.client || 'No client name') + ' · ' + money(p.value);
+    d.querySelector('.badge').textContent = p.status;
+    var btnWrap = d.querySelector('.proj-actions');
+    if(stageIdx < STAGES.length-1){
+      var mv = document.createElement('button'); mv.type='button'; mv.className='smallbtn'; mv.textContent = 'Move to '+STAGES[stageIdx+1]+' →';
+      mv.addEventListener('click', function(){ projects[idx].status = STAGES[stageIdx+1]; renderProjects(); calcAnalytics(); });
+      btnWrap.appendChild(mv);
+    }
+    var del = document.createElement('button'); del.type='button'; del.className='smallbtn'; del.textContent='Remove'; del.setAttribute('aria-label','Remove project '+(p.piece||''));
+    del.addEventListener('click', function(){ projects.splice(idx,1); renderProjects(); calcAnalytics(); });
+    btnWrap.appendChild(del);
+    list.appendChild(d);
+  });
+}
+$('addProject').addEventListener('click', function(){
+  var client = $('pjClient').value.trim(), piece = $('pjPiece').value.trim();
+  if(!piece && !client){ $('pjStatusMsg').textContent = 'Add at least a client name or a piece first.'; return; }
+  projects.push({client:client, piece:piece, value:parseFloat($('pjValue').value)||0, status:$('pjStatus').value});
+  $('pjClient').value=''; $('pjPiece').value=''; $('pjValue').value='0';
+  $('pjStatusMsg').textContent = 'Project added.';
+  renderProjects(); calcAnalytics();
+});
+renderProjects();
+
+// ---------- Inventory ----------
+var fabrics = [];
+function renderFabrics(){
+  var list = $('fabricList'); list.innerHTML='';
+  var totalYards = 0, totalValue = 0, low = 0;
+  fabrics.forEach(function(f){ totalYards += f.yards; totalValue += f.yards*f.cost; if(f.yards<=2) low++; });
+  $('invCount').textContent = fabrics.length; $('invYards').textContent = totalYards.toFixed(1).replace('.0','');
+  $('invValue').textContent = money(totalValue); $('invLow').textContent = low;
+  if(!fabrics.length){ list.innerHTML = '<div class="empty">Nothing tracked yet.<br>Add the fabric already on your shelves.</div>'; return; }
+  fabrics.forEach(function(f, idx){
+    var d = document.createElement('div'); d.className='proj';
+    d.innerHTML = '<div><b></b><div class="meta"></div></div><div class="proj-actions" style="display:flex;gap:6px;align-items:center"></div>';
+    d.querySelector('b').textContent = f.name;
+    var meta = d.querySelector('.meta');
+    meta.textContent = f.type+' · '+f.yards+' yd @ '+money(f.cost)+'/yd = '+money(f.yards*f.cost);
+    if(f.yards<=2){ var s=document.createElement('span'); s.className='low'; s.textContent=' · LOW'; meta.appendChild(s); }
+    var wrap = d.querySelector('.proj-actions');
+    var use = document.createElement('button'); use.type='button'; use.className='smallbtn'; use.textContent='Use 1 yd';
+    use.addEventListener('click', function(){ fabrics[idx].yards = Math.max(0, fabrics[idx].yards-1); renderFabrics(); });
+    var del = document.createElement('button'); del.type='button'; del.className='smallbtn'; del.textContent='Remove';
+    del.addEventListener('click', function(){ fabrics.splice(idx,1); renderFabrics(); });
+    wrap.appendChild(use); wrap.appendChild(del);
+    list.appendChild(d);
+  });
+}
+$('addFabric').addEventListener('click', function(){
+  var name = $('fbName').value.trim();
+  if(!name){ $('fbStatus').textContent = 'Give the fabric a name first.'; return; }
+  fabrics.push({name:name, type:$('fbType').value, yards:parseFloat($('fbYards').value)||0, cost:parseFloat($('fbCost').value)||0});
+  $('fbName').value=''; $('fbYards').value='0';
+  $('fbStatus').textContent = 'Fabric added.';
+  renderFabrics();
+});
+renderFabrics();
+
+// ---------- Scheduling ----------
+function fmtDate(d){ return d.toLocaleDateString('en-CA',{weekday:'short', year:'numeric', month:'short', day:'numeric'}); }
+function calcSchedule(){
+  var hours = parseFloat($('scHours').value)||0, perDay = parseFloat($('scPerDay').value)||0;
+  var perWeek = parseInt($('scDays').value,10)||5;
+  var startVal = $('scStart').value, dueVal = $('scDue').value;
+  if(!hours || !perDay || !startVal){ $('scDaysOut').textContent='—'; $('scFinish').textContent='—'; $('scFit').textContent='—'; $('scNote').textContent='Enter the bench hours, hours per day, and a start date.'; return; }
+  var daysNeeded = Math.ceil(hours/perDay);
+  var d = new Date(startVal+'T12:00:00'); var counted = 0;
+  // working days: for perWeek 5 skip Sat/Sun, 6 skip Sun, 7 none, fewer: first N weekdays Mon-based
+  function isWorkday(dt){
+    var day = dt.getDay(); // 0 Sun..6 Sat
+    if(perWeek===7) return true;
+    if(perWeek===6) return day!==0;
+    if(perWeek===5) return day>=1 && day<=5;
+    return day>=1 && day<=perWeek;
+  }
+  while(counted < daysNeeded){
+    if(isWorkday(d)) counted++;
+    if(counted < daysNeeded) d.setDate(d.getDate()+1);
+  }
+  $('scDaysOut').textContent = daysNeeded + (daysNeeded===1?' day':' days');
+  $('scFinish').textContent = fmtDate(d);
+  if(dueVal){
+    var due = new Date(dueVal+'T12:00:00');
+    var diff = Math.round((due - d)/86400000);
+    if(diff >= 0){ $('scFit').textContent = 'On time'; $('scNote').textContent = ($('scName').value.trim()||'This job')+' finishes '+fmtDate(d)+' — '+diff+' calendar day'+(diff===1?'':'s')+' before the promised date. That buffer covers a fabric hiccup, not a second job landing on top.'; }
+    else { $('scFit').textContent = 'Late by '+Math.abs(diff)+'d'; $('scNote').textContent = ($('scName').value.trim()||'This job')+' finishes '+fmtDate(d)+', which is '+Math.abs(diff)+' calendar day'+(Math.abs(diff)===1?'':'s')+' past the promised date. Add bench hours per day, start earlier, or renegotiate the date before you start — not after.'; }
+  } else {
+    $('scFit').textContent = 'No date set'; $('scNote').textContent = 'Finishing '+fmtDate(d)+' at '+perDay+' bench hours a day. Add a promised date to check it against the plan.';
+  }
+}
+['scName','scHours','scPerDay','scStart','scDue','scDays'].forEach(function(id){ $(id).addEventListener('input', calcSchedule); $(id).addEventListener('change', calcSchedule); });
+(function(){ var t=new Date(); $('scStart').value = t.toISOString().slice(0,10); var d2=new Date(Date.now()+14*86400000); $('scDue').value = d2.toISOString().slice(0,10); })();
+calcSchedule();
+
+// ---------- Analytics ----------
+function calcAnalytics(){
+  var jobs = parseFloat($('anJobs').value)||0, rev = parseFloat($('anRevenue').value)||0;
+  var hrs = parseFloat($('anHours').value)||0, fab = parseFloat($('anFabric').value)||0, costs = parseFloat($('anCosts').value)||0;
+  var net = rev - fab - costs;
+  $('anAvg').textContent = jobs ? money(rev/jobs) : '—';
+  $('anNet').textContent = rev ? money(net) : '—';
+  $('anHourly').textContent = (rev && hrs) ? money(net/hrs)+' / hr' : '—';
+  $('anMatPct').textContent = rev ? Math.round(fab/rev*100)+'%' : '—';
+  var note = 'Enter at least jobs and revenue to see the breakdown.';
+  if(jobs && rev && hrs){
+    var hourly = net/hrs;
+    if(hourly < 50) note = 'After materials and costs you kept about '+money(hourly)+' per bench hour — below the $50 low end of the HomeGuide labour range. Either prices, hours, or material costs need a look.';
+    else if(hourly <= 100) note = 'After materials and costs you kept about '+money(hourly)+' per bench hour — inside the HomeGuide $50–$100 labour range.';
+    else note = 'After materials and costs you kept about '+money(hourly)+' per bench hour — above the HomeGuide $50–$100 labour range for this period.';
+  } else if(rev){
+    note = 'Revenue entered. Add jobs completed and bench hours to get the per-job and per-hour picture.';
+  }
+  $('anNote').textContent = note;
+}
+['anJobs','anRevenue','anHours','anFabric','anCosts'].forEach(function(id){ $(id).addEventListener('input', calcAnalytics); });
+calcAnalytics();
+
+// ---------- Invoice builder ----------
+var lineBox = $('lineItems');
+function addLineRow(desc, qty, price){
+  var row=document.createElement('div'); row.className='lineitem';
+  row.innerHTML='<div><label style="font-size:12px;color:var(--muted)">Description<input type="text" class="li-desc" placeholder="e.g. Reupholstery — loveseat"></label></div>'
+    +'<div><label style="font-size:12px;color:var(--muted)">Qty<input type="number" class="li-qty" min="0" step="1" value="1"></label></div>'
+    +'<div><label style="font-size:12px;color:var(--muted)">Price $<input type="number" class="li-price" min="0" step="1" value="0"></label></div>'
+    +'<button type="button" class="delbtn" aria-label="Remove this line">×</button>';
+  if(desc) row.querySelector('.li-desc').value=desc;
+  if(qty) row.querySelector('.li-qty').value=qty;
+  if(price!=null) row.querySelector('.li-price').value=price;
+  row.querySelector('.delbtn').addEventListener('click', function(){ row.remove(); renderInvoice(); });
+  row.querySelectorAll('input').forEach(function(i){ i.addEventListener('input', renderInvoice); });
+  lineBox.appendChild(row);
+  return row;
+}
+function setLine(idx, desc, qty, price){
+  var rows = lineBox.querySelectorAll('.lineitem');
+  var row = rows[idx] || addLineRow();
+  row.querySelector('.li-desc').value=desc; row.querySelector('.li-qty').value=qty; row.querySelector('.li-price').value=price;
+}
+function invoiceData(){
+  var items=[];
+  lineBox.querySelectorAll('.lineitem').forEach(function(r){
+    var d=r.querySelector('.li-desc').value.trim();
+    var q=parseFloat(r.querySelector('.li-qty').value)||0;
+    var p=parseFloat(r.querySelector('.li-price').value)||0;
+    if(d||p) items.push({desc:d||'Item', qty:q, price:p, total:q*p});
+  });
+  var sub = items.reduce(function(a,i){return a+i.total;},0);
+  var taxRate = parseFloat($('taxRate').value)||0;
+  var tax = sub*taxRate/100;
+  var total = sub+tax;
+  var dep = parseFloat($('depositPaid').value)||0;
+  return {items:items, sub:sub, taxRate:taxRate, tax:tax, total:total, dep:dep, balance:total-dep,
+    shop:$('shopName').value.trim(), contact:$('shopContact').value.trim(), client:$('clientName').value.trim(),
+    num:$('invNum').value.trim()||'INV-001', date:$('invDate').value, notes:$('invNotes').value.trim()};
+}
+function renderInvoice(){
+  var v = invoiceData();
+  var rows = v.items.map(function(i){ return '<tr><td>'+esc(i.desc)+'</td><td class="num">'+i.qty+'</td><td class="num">'+money(i.price)+'</td><td class="num">'+money(i.total)+'</td></tr>'; }).join('');
+  if(!rows) rows='<tr><td colspan="4" style="color:#5a6b5e">Add a line item to see it here.</td></tr>';
+  $('invoicePaper').innerHTML =
+    '<h3>'+esc(v.shop||'Your Shop Name')+'</h3>'
+    +(v.contact?'<div>'+esc(v.contact)+'</div>':'')
+    +'<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:14px 0"><div><b>Bill to:</b> '+esc(v.client||'Client name')+'</div><div><b>'+esc(v.num)+'</b>'+(v.date?'<br>'+esc(v.date):'')+'</div></div>'
+    +'<table><thead><tr><th style="color:#7a4416">Description</th><th class="num" style="color:#7a4416">Qty</th><th class="num" style="color:#7a4416">Price</th><th class="num" style="color:#7a4416">Total</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'<div class="tot" style="margin-top:14px;line-height:1.9">Subtotal: '+money(v.sub)+'<br>Tax ('+v.taxRate+'%): '+money(v.tax)+'<br><b style="font-size:17px">Total: '+money(v.total)+'</b>'
+    +(v.dep?'<br>Deposit paid: −'+money(v.dep)+'<br><b>Balance due: '+money(v.balance)+'</b>':'')
+    +'</div>'
+    +(v.notes?'<p style="margin-top:16px"><b>Notes:</b> '+esc(v.notes)+'</p>':'');
+}
+function invoiceText(){
+  var v = invoiceData();
+  var L=[];
+  L.push('INVOICE '+v.num+(v.date?' — '+v.date:''));
+  L.push(v.shop||'Your Shop Name'); if(v.contact) L.push(v.contact);
+  L.push('Bill to: '+(v.client||'Client'));
+  L.push('--------------------------------');
+  v.items.forEach(function(i){ L.push(i.desc+'  x'+i.qty+'  @ '+money(i.price)+'  = '+money(i.total)); });
+  L.push('--------------------------------');
+  L.push('Subtotal: '+money(v.sub)); L.push('Tax ('+v.taxRate+'%): '+money(v.tax)); L.push('TOTAL: '+money(v.total));
+  if(v.dep){ L.push('Deposit paid: -'+money(v.dep)); L.push('Balance due: '+money(v.balance)); }
+  if(v.notes) L.push('Notes: '+v.notes);
+  return L.join('\n');
+}
+$('copyInvoice').addEventListener('click', function(){ copyText(invoiceText(), $('invStatus'), 'Invoice copied — paste it into an email or message.'); });
+$('dlInvoice').addEventListener('click', function(){
+  var blob = new Blob([invoiceText()], {type:'text/plain'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(invoiceData().num||'invoice')+'.txt'; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+  $('invStatus').textContent='Invoice downloaded as a text file.';
+});
+$('addLine').addEventListener('click', function(){ addLineRow(); renderInvoice(); });
+['shopName','shopContact','clientName','invNum','invDate','taxRate','depositPaid','invNotes'].forEach(function(id){ $(id).addEventListener('input', renderInvoice); });
+(function(){ var t=new Date(); $('invDate').value = t.toISOString().slice(0,10); })();
+addLineRow('Reupholstery — ', 1, 0);
+addLineRow('', 1, 0);
+renderInvoice();
 </script>
 </body>
 </html>
