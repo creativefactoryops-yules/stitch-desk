@@ -266,7 +266,7 @@ footer p{margin:6px 0}
     </div>
   </div>
 
-  <p class="note" style="margin-top:18px"><b style="color:var(--ink)">How this trial actually works — no fine print:</b> this is a <b style="color:var(--ink)">local trial stored only in your own browser</b> (browser local storage on this device). It is <b style="color:var(--ink)">not an account</b> and there is <b style="color:var(--ink)">no server check</b> — your name, business name, and email are saved on this device only and are never sent anywhere by this page. That also means the trial lives in this one browser: using a different browser or device, private/incognito mode, or clearing your browser data will reset it, and the lock is a browser lock, not server security. Your details are used only so a payment can be matched to your shop.</p>
+  <p class="note" style="margin-top:18px"><b style="color:var(--ink)">How this trial actually works — no fine print:</b> this is a <b style="color:var(--ink)">local trial stored only in your own browser</b> (browser local storage on this device). It is <b style="color:var(--ink)">not an account</b> and there is <b style="color:var(--ink)">no server check</b> — the tools unlock from this browser only. When you start the trial, your name, business name, and email are also sent once to the StitchDesk owner so she knows a trial started and can match a payment to your shop later. Nothing else is sent. That also means the trial lives in this one browser: using a different browser or device, private/incognito mode, or clearing your browser data will reset it, and the lock is a browser lock, not server security.</p>
   <div class="btnrow" id="resetRow" hidden>
     <button class="btn secondary" type="button" id="resetTrialBtn">Clear the trial data saved in this browser</button>
   </div>
@@ -288,7 +288,7 @@ footer p{margin:6px 0}
       <div class="btnrow">
         <a class="btn" href="#trial">Start the 14-day free trial →</a>
       </div>
-      <p class="note">The trial starts on this page, in the section above — name, business name, and email, saved only in your own browser. No card, no account, no auto-charge at the end of the 14 days. When it ends, the tools lock until the $20 month is paid.</p>
+      <p class="note">The trial starts on this page, in the section above — name, business name, and email, saved in your own browser and sent once to the StitchDesk owner so she knows a trial started. No card, no account, no auto-charge at the end of the 14 days. When it ends, the tools lock until the $20 month is paid.</p>
     </div>
     <div class="paybox">
       <h3>❯ How you pay (after the trial)</h3>
@@ -773,6 +773,11 @@ footer p{margin:6px 0}
     save({name:name, business:biz, email:email, start:Date.now(), paidUntil:0});
     status.textContent = '';
     render();
+    // Notify Yules that a trial started — fire-and-forget, never blocks the trial.
+    try{
+      fetch('/api/signup', {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({name:name, businessName:biz, email:email})}).catch(function(){});
+    }catch(e){}
     document.getElementById('calculator').scrollIntoView({behavior:'smooth'});
   });
 
